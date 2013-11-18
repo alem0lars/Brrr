@@ -1,0 +1,19 @@
+all:
+  - global
+  - system
+  - capture_tcp
+  - com
+  - detection_base
+  - detection_software
+
+only_capture:
+  - global
+  - system
+  - capture_tcp
+
+detection:
+  - global
+  - system
+  - capture_tcp
+  - detection_base
+  - detection_software

@@ -1,0 +1,11 @@
+%ul.vcard
+  %li.fn
+    - if author.homepage
+      %span{ "data-tooltip" => "", "class" => "has-tip", title: author.homepage }
+        %a{href: author.homepage}= author.name
+    - else
+      %span= author.name
+  - if author.email
+    %li.email
+      %small
+        %a{ href: "mailto:#{author.email}" }= author.email

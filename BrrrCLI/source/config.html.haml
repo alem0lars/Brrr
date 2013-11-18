@@ -1,0 +1,39 @@
+---
+rjs_main_name: config
+---
+
+
+.configurator
+  .row
+  
+    %form.custom{ "data-abide" => "" }
+    
+      %fieldset
+    
+        %legend Communication configurations
+        
+        .row
+          .small-6.columns
+            %label{ for: "config-addr-input" }
+              Address
+              %small required
+            %input#config-addr-input{ type: "text", pattern: data.services.addr.regex, "required" => "", value: data.services.addr.default_value }
+            %small.error A valid IP address is required
+          
+          .small-6.columns
+            %label{ for: "config-port-input" }
+              Port
+              %small required
+            %input#config-port-input{ type: "text", pattern: data.services.port.regex, "required" => "", value: data.services.port.default_value }
+            %small.error A valid port is required
+  
+        .row
+          .large-12.columns
+            .button-bar
+              %ul.button-group
+                %li
+                  %a.clear-config-action.small.button{ href: "#" } Clear
+                %li
+                  %a.load-config-action.small.button{ href: "#" } Load
+                %li
+                  %button.save-config-action.small.button{ type: "submit" } Save

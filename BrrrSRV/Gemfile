@@ -1,0 +1,16 @@
+source 'https://rubygems.org'
+
+
+# Circular queue
+gem 'circular_queue'
+
+gem 'eventmachine'
+
+# EventMachine-based websocket
+gem 'em-websocket'
+
+gem "foreman"
+
+gem "mkfifo"
+
+gem "rake-compiler"

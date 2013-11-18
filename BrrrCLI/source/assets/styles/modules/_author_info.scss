@@ -1,0 +1,53 @@
+$author-info-border-radius: 6px;
+$author-vcard-spacing-horiz: 0.4em;
+$author-vcard-spacing-vert: 0.4em;
+
+
+@mixin white-vcard {
+  border: 1px solid white;
+  background-color: rgba(255,255,255,0.4);
+  
+  &,
+  & a,
+  & p {
+    color: black;
+  }
+}
+
+@mixin dark-vcard {
+  border: 0px solid black;
+  background-color: rgba(0,0,0,0.4);
+
+  &,
+  & a,
+  & p { 
+    color: white;
+    letter-spacing: 0.08em;
+  }
+
+}
+
+
+.author-info {
+  position: relative;
+  background-size: 100%;
+  min-height: 200px;
+  border-radius: $author-info-border-radius;
+  box-shadow: 0px 0px 4px black;
+  margin: 8px 16px;
+
+  &:hover {
+    cursor: default;
+  }
+  
+  .vcard {
+    position: absolute;
+    margin: 0;
+    bottom: $author-vcard-spacing-vert;
+    right: $author-vcard-spacing-horiz;
+    left: $author-vcard-spacing-horiz;
+    text-align: center;
+    border-radius: $author-info-border-radius;
+    @include white-vcard();
+  }
+}

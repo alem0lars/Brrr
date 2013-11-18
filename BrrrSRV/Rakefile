@@ -1,0 +1,30 @@
+require "pathname"
+require "rake/extensiontask"
+require "rake/clean"
+
+
+ROOT_PTH = Pathname.new File.dirname(__FILE__)
+TMP_PTH = ROOT_PTH.join("tmp")
+LOG_PTH = ROOT_PTH.join("log")
+LIB_PTH = ROOT_PTH.join("lib")
+C_EXTS = %w(broccoli_reader) 
+DIRTY_FILES = 
+	Dir.glob(LOG_PTH.join("*")).map(&:to_s) +
+	Dir.glob(TMP_PTH.join("*")).map(&:to_s) +
+	C_EXTS.collect { |c_ext| LIB_PTH.join("#{c_ext}.bundle").to_s }
+
+
+# { Tasks definition
+
+CLEAN.include(DIRTY_FILES)
+
+C_EXTS.each { |c_ext| Rake::ExtensionTask.new(c_ext) }
+
+namespace :build do
+	
+	desc "Compile C extensions. Requires broccoli, json-c, openssl"
+	task :c_exts => ["compile"]
+
+end
+
+# }

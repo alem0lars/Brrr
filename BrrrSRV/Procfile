@@ -1,0 +1,5 @@
+pusher: bundle exec ruby -I lib -e "require 'brrr'; Brrr::Pusher::Application.new(ARGV).run"
+
+bufferer: bundle exec ruby -I lib -e "require 'brrr'; Brrr::Bufferer::Application.new(ARGV).run"
+
+reader: bundle exec ruby -I lib -e "require 'brrr'; Brrr::Reader::Application.new(ARGV).run"

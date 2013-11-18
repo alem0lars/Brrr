@@ -1,0 +1,24 @@
+---
+rjs_main_name: about
+---
+
+
+.row
+  %h1 Authors
+
+.row.panel
+  %ul.small-block-grid-2.large-block-grid-4
+    - data.authors.each do |author|
+      - if author.credits
+        %li.author-info{ "data-author-username" => author.username, "data-tooltip" => "", "class" => "has-tip", title: author.credits.join("<br/>") }
+          = render_partial "partials/author_vcard", locals: { author: author }
+      - else
+        %li.author-info{ "data-author-username" => author.username }
+          = render_partial "partials/author_vcard", locals: { author: author }
+                        
+.row.panel
+  %h3 Main application contexts
+  
+  %ul.small-block-grid-2.large-block-grid-4
+    %li The Configurator
+    %li The Capturer

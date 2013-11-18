@@ -1,0 +1,14 @@
+<script type="text/x-handlebars" data-template-name="application">
+  {{outlet}}
+</script>
+
+%script{ type: "text/x-handlebars", "data-template-name" => "connections" }
+  .section-container.tabs{ "data-section" => "tabs" }
+    {{#each}}
+    %section.active
+      %p.title{ "data-section-title" => "" }
+        %a{ href: "#" }
+          {{uuid}}
+      .content{ "data-section-content" => "" }
+        {{outlet}}
+    {{/each}}
