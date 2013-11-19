@@ -7,9 +7,9 @@ module Brrr::Reader
 		include BroccoliReader
 
 		def initialize(args)
-			@fifo_path = args[0] || "tmp/brrr_fifo"
-			@bro_addr = args[1] || "127.0.0.1"
-			@bro_port = args[2] || 47757
+			@bro_addr = args[0] || "127.0.0.1"
+			@bro_port = args[1] || 47757
+			@fifo_path = args[2] || "tmp/brrr_fifo"
 		end
 		
 		def run

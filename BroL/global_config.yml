@@ -1,0 +1,11 @@
+# [OPZ] Insert your local networks
+#local_nets:
+#  - 1.2.3.4/16
+#  - 5.6.7.8/24
+
+# [OPZ] Ignore checksums (defaults: false)
+# (If the packet checksum calculated is offloaded to the NIC or there are any capture problems, you may want to uncomment this)
+#ignore_checksums: true
+
+# [REQ] Specify the network interface.
+interface: en4

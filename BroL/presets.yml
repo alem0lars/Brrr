@@ -1,19 +1,43 @@
-all:
-  - global
-  - system
-  - capture_tcp
-  - com
-  - detection_base
-  - detection_software
+# ### Format
+#
+#     <preset_name>:
+#       - name: [string]         \__ A preset element
+#         bundled: [true|false]  /
+#       OR
+#       - *preset_id             --> To include another preset
+#
+# #### Notes:
+# * `bundled` can be omitted (defaults to false)
+# * If the element name is the _only_ element configuration, it can be omitted 
 
-only_capture:
-  - global
-  - system
-  - capture_tcp
 
-detection:
-  - global
-  - system
-  - capture_tcp
-  - detection_base
-  - detection_software
+# The common elements
+commons: &commons
+  # Log which scripts were loaded during each run.
+  - name: misc/loaded-scripts
+    bundled: true
+  # Log evidence regarding the measurement loss of the capture process.
+  - name: misc/capture-loss
+    bundled: true
+  # Log memory/packet/lag statistics.
+  - name: misc/stats
+    bundled: true
+  # Apply the default tuning scripts for common tuning settings.
+  - name: tuning/defaults
+    bundled: true
+  # Initialize the clustering configuration.
+  - name: com
+
+capture_tcp: &capture_tcp
+  - *commons
+  - name: capture_tcp
+
+detection: &detection
+  - *commons
+  - name: detection_base
+  - name: detection_software
+
+all: &all
+  - *commons
+  - *capture_tcp
+  - *detection

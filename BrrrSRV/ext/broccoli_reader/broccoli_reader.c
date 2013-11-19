@@ -55,11 +55,8 @@ void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint64* is_o
 // { Functions
 
 void Init_broccoli_reader() {
-    printf("CIAO\n");
     BroccoliReader = rb_define_module("BroccoliReader");
-    printf("CIAOCIAO\n");
     rb_define_method(BroccoliReader, "start_reading", method_start_reading, 3);
-    printf("CIAOCIAOCIAO\n");
 }
 
 VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port, VALUE v_fifo_path) {
@@ -72,8 +69,6 @@ VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port, VALUE v_fifo_
     addr = RSTRING_PTR(v_addr);
     port = NUM2UINT(v_port);
     fifo_path = RSTRING_PTR(v_fifo_path);
-
-    fprintf(stdout, "fifo_path = %s\n", fifo_path);
 
     if (inet_pton(AF_INET, addr, &bro_addr) != 1) {
         if (errno != 0) {
