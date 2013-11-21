@@ -26,8 +26,7 @@
 
 // Defining a space for information and references about the module to be stored internally
 VALUE BroccoliReader = Qnil;
-
-FILE* fifo_file;
+VALUE block = Qnil;
 
 // }
 
@@ -37,17 +36,17 @@ FILE* fifo_file;
 // Prototype for the initialization method - Ruby calls this, not you
 void Init_broccoli_reader();
 // Wrapper around start_reading
-VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port, VALUE v_fifo_path);
+VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port);
 // Starts reading from broccoli
-int start_reading(struct in_addr bro_addr, int bro_port, FILE* fifo_file);
+static int start_reading(struct in_addr bro_addr, int bro_port);
 // Broccoli loop to process the input coming from the broccoli interface
-int process_input_loop(BroConn* bc);
+static int process_input_loop(BroConn* bc);
 // Fetches the connection identifiers
-int fetch_conn_ids(BroRecord* conn, BroString** b_conn_uid_p, BroAddr** b_orig_addr_p, BroPort** b_orig_port_p, BroAddr** b_resp_addr_p, BroPort** b_resp_port_p);
+static int fetch_conn_ids(BroRecord* conn, BroString** b_conn_uid_p, BroAddr** b_orig_addr_p, BroPort** b_orig_port_p, BroAddr** b_resp_addr_p, BroPort** b_resp_port_p);
 // Utility for encoding using base64
-int base64_encode(const char* str, unsigned int str_len, char** str_enc_p);
+static int base64_encode(const char* str, unsigned int str_len, char** str_enc_p);
 // Broccoli event handler
-void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint64* is_orig, uint64* seq, BroString* contents);
+static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint64* is_orig, uint64* seq, BroString* contents);
 
 // }
 
@@ -56,45 +55,46 @@ void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint64* is_o
 
 void Init_broccoli_reader() {
     BroccoliReader = rb_define_module("BroccoliReader");
-    rb_define_method(BroccoliReader, "start_reading", method_start_reading, 3);
+    rb_define_method(BroccoliReader, "start_reading", method_start_reading, 2);
 }
 
-VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port, VALUE v_fifo_path) {
+VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port) {
     char* addr;
     unsigned int port;
-    char* fifo_path;
     struct in_addr bro_addr;
     int bro_port;
 
+    // Set the global block. It will be called by the registered Bro handler
+    //   on_tcp_contents()
+    if(rb_block_given_p()) {
+        block = rb_block_proc();
+    }
+    else {
+        rb_raise(rb_eArgError, "a block is required");
+    }
+
     addr = RSTRING_PTR(v_addr);
     port = NUM2UINT(v_port);
-    fifo_path = RSTRING_PTR(v_fifo_path);
 
     if (inet_pton(AF_INET, addr, &bro_addr) != 1) {
         if (errno != 0) {
             perror("Converting address");
         } else {
-            fprintf(stdout, "Cannot convert address.\n");
+            fprintf(stderr, "Cannot convert address.\n");
         }
         return INT2NUM(-2);
     }
 
     bro_port = htons(port);
 
-    fifo_file = fopen(fifo_path, "w");
-    if (fifo_file == NULL) {
-        perror("Cannot open fifo.\n");
-        return INT2NUM(-3);
-    }
-
-    if (start_reading(bro_addr, bro_port, fifo_file) < 0) {
+    if (start_reading(bro_addr, bro_port) < 0) {
         return INT2NUM(-1);
     }
 
     return INT2NUM(0);
 }
 
-int start_reading(struct in_addr bro_addr, int bro_port, FILE* fifo_file) {
+static int start_reading(struct in_addr bro_addr, int bro_port) {
     int ret = 0;
     BroConn* bc = NULL;
 
@@ -106,7 +106,7 @@ int start_reading(struct in_addr bro_addr, int bro_port, FILE* fifo_file) {
     if ( (ret == 0) &&
         // Obtain a connection handle.
         !(bc = bro_conn_new(&bro_addr, bro_port, BRO_CFLAG_RECONNECT | BRO_CFLAG_ALWAYS_QUEUE)) ) {
-        fprintf(stdout, "Cannot obtain connection handler.\n");
+        fprintf(stderr, "Cannot obtain connection handler.\n");
         ret = -1;
     }
 
@@ -120,14 +120,14 @@ int start_reading(struct in_addr bro_addr, int bro_port, FILE* fifo_file) {
     if ( (ret == 0) &&
         // Connect to the peer.
         (!bro_conn_connect(bc)) ) {
-        fprintf(stdout, "Cannot connect to Bro.\n");
+        fprintf(stderr, "Cannot connect to Bro.\n");
         ret = -2;
     }
 
     // We are already connected.
     // From now on, new event handler registration must be done in this way:
-    // 1. event_registry_add( ... );
-    // 2. bro_event_registry_request(bc);
+    //   1. event_registry_add( ... );
+    //   2. bro_event_registry_request(bc);
 
     if ( (ret == 0) &&
         // Send and receive events.
@@ -142,7 +142,7 @@ int start_reading(struct in_addr bro_addr, int bro_port, FILE* fifo_file) {
     return ret;
 }
 
-int process_input_loop(BroConn* bc) {
+static int process_input_loop(BroConn* bc) {
     int bro_fd;
     struct timeval timeout;
     fd_set master_fdset, work_fdset;
@@ -164,15 +164,15 @@ int process_input_loop(BroConn* bc) {
             perror("Waiting for bro input: select()");
             return -1;
         } else if (ready_count == 0) {
-            fprintf(stdout, "Waiting for Bro input: select() timed out.\n");
-            return 1;
+            fprintf(stderr, "Waiting for Bro input: select() timed out.\n");
+            // Don't return, redo select().
         } else {
             bro_conn_process_input(bc);
         }
     } while (1);
 }
 
-int fetch_conn_ids(BroRecord* b_conn, BroString** b_conn_uid_p,
+static int fetch_conn_ids(BroRecord* b_conn, BroString** b_conn_uid_p,
     BroAddr** b_orig_addr_p, BroPort** b_orig_port_p,
     BroAddr** b_resp_addr_p, BroPort** b_resp_port_p) {
 
@@ -182,44 +182,44 @@ int fetch_conn_ids(BroRecord* b_conn, BroString** b_conn_uid_p,
     bro_type = BRO_TYPE_STRING;
     *b_conn_uid_p = bro_record_get_named_val(b_conn, "uid", &bro_type); // conn$uid
     if (*b_conn_uid_p == NULL) {
-        fprintf(stdout, "Cannot get conn$uid.\n");
+        fprintf(stderr, "Cannot get conn$uid.\n");
         return -1;
     }
     bro_type = BRO_TYPE_RECORD;
     b_conn_id = bro_record_get_named_val(b_conn, "id", &bro_type); // conn$id
     if (b_conn_id == NULL) {
-        fprintf(stdout, "Cannot get conn$id.\n");
+        fprintf(stderr, "Cannot get conn$id.\n");
         return -2;
     }
     bro_type = BRO_TYPE_IPADDR;
     *b_orig_addr_p = bro_record_get_named_val(b_conn_id, "orig_h", &bro_type); // conn$id$orig_h
     if (*b_orig_addr_p == NULL) {
-        fprintf(stdout, "Cannot get conn$id$orig_h.\n");
+        fprintf(stderr, "Cannot get conn$id$orig_h.\n");
         return -3;
     }
     bro_type = BRO_TYPE_PORT;
     *b_orig_port_p = bro_record_get_named_val(b_conn_id, "orig_p", &bro_type); // conn$id$orig_p
     if (*b_orig_port_p == NULL) {
-        fprintf(stdout, "Cannot get conn$id$orig_p.\n");
+        fprintf(stderr, "Cannot get conn$id$orig_p.\n");
         return -4;
     }
     bro_type = BRO_TYPE_IPADDR;
     *b_resp_addr_p = bro_record_get_named_val(b_conn_id, "resp_h", &bro_type); // conn$id$resp_h
     if (*b_resp_addr_p == NULL) {
-        fprintf(stdout, "Cannot get conn$id$resp_h.\n");
+        fprintf(stderr, "Cannot get conn$id$resp_h.\n");
         return -5;
     }
     bro_type = BRO_TYPE_PORT;
     *b_resp_port_p = bro_record_get_named_val(b_conn_id, "resp_p", &bro_type); // conn$id$resp_p
     if (*b_resp_port_p == NULL) {
-        fprintf(stdout, "Cannot get conn$id$resp_p.\n");
+        fprintf(stderr, "Cannot get conn$id$resp_p.\n");
         return -6;
     }
 
     return 0;
 }
 
-int base64_encode(const char* str, unsigned int str_len, char** str_enc_p)
+static int base64_encode(const char* str, unsigned int str_len, char** str_enc_p)
 {
     char *buff;
 
@@ -267,7 +267,7 @@ int base64_encode(const char* str, unsigned int str_len, char** str_enc_p)
 //     return 0;
 // }
 
-void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint64* is_orig, uint64* seq, BroString* contents) {
+static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint64* is_orig, uint64* seq, BroString* contents) {
     BroString* b_conn_uid;
     BroAddr* b_orig_addr; BroPort* b_orig_port;
     BroAddr* b_resp_addr; BroPort* b_resp_port;
@@ -278,22 +278,21 @@ void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint64* is_o
     json_object* j_origin;
     json_object* j_responder;
     char* out_jstr;
-    int ret;
 
-    fprintf(stdout, "[TCP_CONTENTS]\n");
+    fprintf(stderr, "[TCP_CONTENTS]\n");
 
     // { Get main infos about the connection.
 
     if (fetch_conn_ids(conn, &b_conn_uid,
         &b_orig_addr, &b_orig_port, &b_resp_addr, &b_resp_port) != 0) {
-        fprintf(stdout, "Cannot get ids from connection.\n");
+        fprintf(stderr, "Cannot get ids from connection.\n");
         exit(EXIT_FAILURE);
     }
 
     inet_ntop(AF_INET6, b_orig_addr->addr, orig_addr_str, INET6_ADDRSTRLEN);
     inet_ntop(AF_INET6, b_resp_addr->addr, resp_addr_str, INET6_ADDRSTRLEN);
 
-    fprintf(stdout, "\t[uid: %s] [orig: %s:%lu] %s [resp: %s:%lu]\n",
+    fprintf(stderr, "\t[uid: %s] [orig: %s:%lu] %s [resp: %s:%lu]\n",
         bro_string_get_data(b_conn_uid),
         orig_addr_str, b_orig_port->port_num,
         (*is_orig)? "-->" : "<--",
@@ -306,14 +305,14 @@ void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint64* is_o
 
     // This cannot be handled as a normal NULL-terminated string, as the payload
     // can contain NULLs. Bro already handles this, not stopping at the first NULL.
-    if (base64_encode(contents->str_val, contents->str_len, &data_b64) != 0) {
-        fprintf(stdout, "Cannot encode data in base64.\n");
+    if (base64_encode((char*) contents->str_val, contents->str_len, &data_b64) != 0) {
+        fprintf(stderr, "Cannot encode data in base64.\n");
         exit(EXIT_FAILURE);
     }
 
     // }
 
-    // { Create and dump json to the fifo.
+    // { Create and pass the JSON string to the ruby block.
 
     j_obj = json_object_new_object();
 
@@ -336,21 +335,16 @@ void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint64* is_o
 
     out_jstr = json_object_to_json_string(j_obj);
 
-    ret = fprintf(fifo_file, "%s\n", out_jstr);
-
-    if (ret < 0) {
-        fprintf(stdout, "Cannot write to output fifo.\n");
-        exit(EXIT_FAILURE);
-    } else if (ret !=  strlen(out_jstr) + 1) {
-        fprintf(stdout, "Truncated write on output fifo!\n");
-        exit(EXIT_FAILURE);
-    }
+    // TODO: Call ruby block with out_jstr as argument.
+    rb_funcall(block, rb_intern("call"), out_jstr);
 
     // }
 
-    fprintf(stdout, "--------------\n");
+    fprintf(stderr, "--------------\n");
 
-    // Cleanup
+    // Cleanup.
+    // TODO: Release refcount on out_jstr and other json objects.
+    // TODO: How is data passed to ruby? Is it safe to free what we did yield to the block?
     bc = NULL;
     user_data = NULL;
     return;

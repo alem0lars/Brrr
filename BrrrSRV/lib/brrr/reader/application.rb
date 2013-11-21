@@ -6,21 +6,52 @@ module Brrr::Reader
 
 		include BroccoliReader
 
+		attr_reader :bro_addr, :bro_port, :listen_addr, :listen_port, :queue_size
+
 		def initialize(args)
 			@bro_addr = args[0] || "127.0.0.1"
-			@bro_port = args[1] || 47757
-			@fifo_path = args[2] || "tmp/brrr_fifo"
+			@bro_port = (args[1] || 47757).to_i
+			@listen_addr = args[2] || "127.0.0.1"
+			@listen_port = (args[3] || 7999).to_i
+			@queue_size = (args[4] || 128).to_i
 		end
-		
+
 		def run
-			logger.info("Started reading")
-			
-			FileUtils.rm(@fifo_path) if File.exists? @fifo_path
-			fifo_file = File.mkfifo(@fifo_path)
-			
-			result = start_reading(@bro_addr, @bro_port, @fifo_path)
-			
-			logger.info("Finished reading with status: #{result}")
+			logger.info "Reader started."
+
+			Thread.abort_on_exception = true
+
+			queue = CircularQueue.new(@queue_size)
+
+			# { Accept incoming connection and push queue contents to socket.
+
+			acceptor = Brrr::Commons::SequentialTcpAcceptor.new(@listen_addr, @listen_port)
+			logger.info "Accepting connections on #{@listen_addr}:#{@listen_port}/tcp ..."
+
+			acc_thr = Thread.new(logger, acceptor, queue) do |l, acc, q|
+				acc.each_accept do |sck|
+					l.info "[Acceptor] Client connected."
+					while s = q.deq # CircularQueue#deq blocks if the queue is empty.
+				    sck.puts(s)
+				    l.debug "[Acceptor][Socket Writer] deq: queue status: #{q.size}/#{q.capacity} ."
+				  end
+				end
+			end
+
+			# }
+
+			# { Read traffic from Bro fill the queue.
+
+			result = start_reading(@bro_addr, @bro_port) do |j_str|
+				queue << j_str
+			end
+
+			# }
+
+			# TODO: How we deal with different exceptional cases?
+			# TODO: Should we kill the acceptor thread in some cases?
+
+			logger.info("Reader exiting with status: #{result} .")
 		end
 
 	end
