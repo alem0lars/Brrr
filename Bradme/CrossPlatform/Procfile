@@ -1,1 +1,0 @@
-app: bundle exec ruby -I lib -r bradme -e "Bradme::UI::Application.new(ARGV).start"
