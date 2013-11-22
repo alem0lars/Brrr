@@ -13,7 +13,7 @@ module Brrr::Reader
 			@bro_port = (args[1] || 47757).to_i
 			@listen_addr = args[2] || "127.0.0.1"
 			@listen_port = (args[3] || 7999).to_i
-			@queue_size = (args[4] || 128).to_i
+			@queue_size = (args[4] || 8192).to_i
 		end
 
 		def run
@@ -31,10 +31,9 @@ module Brrr::Reader
 			acc_thr = Thread.new(logger, acceptor, queue) do |l, acc, q|
 				acc.each_accept do |sck|
 					l.info "[Acceptor] Client connected."
-					loop do
-						#s = q.deq # CircularQueue#deq blocks if the queue is empty.
-				    #sck.puts(s)
-				    #l.debug "[Queue reader] deq: queue status: #{q.size}/#{q.capacity} ."
+					while s = q.deq # CircularQueue#deq blocks if the queue is empty.
+				    sck.puts(s) # TODO: handle client disconnect.
+				    l.debug "[Queue reader] deq: queue status: #{q.size}/#{q.capacity} ."
 				  end
 				end
 			end
