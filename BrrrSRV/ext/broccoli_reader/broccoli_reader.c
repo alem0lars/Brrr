@@ -17,7 +17,7 @@
 
 // { Constants
 
-#define SELECT_TIMEOUT_SECS 3600
+#define SELECT_TIMEOUT_SECS 8
 
 // }
 
@@ -58,6 +58,7 @@ void Init_broccoli_reader() {
     rb_define_method(BroccoliReader, "start_reading", method_start_reading, 2);
 }
 
+
 VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port) {
     char* addr;
     unsigned int port;
@@ -87,12 +88,15 @@ VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port) {
 
     bro_port = htons(port);
 
+    fprintf(stderr, "Parsed args: %s:%d/tcp\n", addr, port);
+
     if (start_reading(bro_addr, bro_port) < 0) {
         return INT2NUM(-1);
     }
 
     return INT2NUM(0);
 }
+
 
 static int start_reading(struct in_addr bro_addr, int bro_port) {
     int ret = 0;
@@ -142,6 +146,7 @@ static int start_reading(struct in_addr bro_addr, int bro_port) {
     return ret;
 }
 
+
 static int process_input_loop(BroConn* bc) {
     int bro_fd;
     struct timeval timeout;
@@ -149,14 +154,14 @@ static int process_input_loop(BroConn* bc) {
     int ready_count;
 
     bro_fd = bro_conn_get_fd(bc);
-    timeout.tv_sec  = SELECT_TIMEOUT_SECS;
-    timeout.tv_usec = 0;
 
     FD_ZERO(&master_fdset);
     FD_SET(bro_fd, &master_fdset);
 
     do {
         memcpy(&work_fdset, &master_fdset, sizeof(fd_set));
+        timeout.tv_sec  = SELECT_TIMEOUT_SECS;
+        timeout.tv_usec = 0;
 
         ready_count = select(bro_fd + 1, &work_fdset, NULL, NULL, &timeout);
 
@@ -171,6 +176,7 @@ static int process_input_loop(BroConn* bc) {
         }
     } while (1);
 }
+
 
 static int fetch_conn_ids(BroRecord* b_conn, BroString** b_conn_uid_p,
     BroAddr** b_orig_addr_p, BroPort** b_orig_port_p,
@@ -219,8 +225,8 @@ static int fetch_conn_ids(BroRecord* b_conn, BroString** b_conn_uid_p,
     return 0;
 }
 
-static int base64_encode(const char* str, unsigned int str_len, char** str_enc_p)
-{
+
+static int base64_encode(const char* str, unsigned int str_len, char** str_enc_p) {
     char *buff;
 
     BIO *bmem, *b64;
@@ -244,28 +250,6 @@ static int base64_encode(const char* str, unsigned int str_len, char** str_enc_p
     return 0;
 }
 
-// int base64_encode(const char* str, unsigned int str_len, char** str_enc_p) {
-//     BIO *bio, *b64;
-//     FILE* stream;
-//     int enc_size;
-
-//     // TODO: add checks.
-
-//     enc_size = 4 * ceil((double) str_len / 3.0);
-//     *str_enc_p = (char *)malloc(enc_size + 1);
-//     stream = fmemopen(*str_enc_p, enc_size + 1, "w");
-
-//     b64 = BIO_new(BIO_f_base64());
-//     bio = BIO_new_fp(stream, BIO_NOCLOSE);
-//     bio = BIO_push(b64, bio);
-//     BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL); //Ignore newlines - write everything in one line
-//     BIO_write(bio, str, str_len);
-
-//     BIO_flush(bio);
-//     BIO_free_all(bio);
-//     fclose(stream);
-//     return 0;
-// }
 
 static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint64* is_orig, uint64* seq, BroString* contents) {
     BroString* b_conn_uid;
@@ -278,6 +262,7 @@ static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint6
     json_object* j_origin;
     json_object* j_responder;
     char* out_jstr;
+    VALUE r_out_jstr;
 
     fprintf(stderr, "[TCP_CONTENTS]\n");
 
@@ -334,13 +319,12 @@ static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint6
     json_object_object_add(j_obj, "is_origin_data", json_object_new_boolean(*is_orig));
 
     out_jstr = json_object_to_json_string(j_obj);
+    r_out_jstr = rb_str_new2(out_jstr);
 
-    // TODO: Call ruby block with out_jstr as argument.
-    rb_funcall(block, rb_intern("call"), out_jstr);
+    // Call ruby block with out_jstr as argument.
+    rb_funcall(block, rb_intern("call"), 1, r_out_jstr);
 
     // }
-
-    fprintf(stderr, "--------------\n");
 
     // Cleanup.
     // TODO: Release refcount on out_jstr and other json objects.

@@ -31,9 +31,10 @@ module Brrr::Reader
 			acc_thr = Thread.new(logger, acceptor, queue) do |l, acc, q|
 				acc.each_accept do |sck|
 					l.info "[Acceptor] Client connected."
-					while s = q.deq # CircularQueue#deq blocks if the queue is empty.
-				    sck.puts(s)
-				    l.debug "[Acceptor][Socket Writer] deq: queue status: #{q.size}/#{q.capacity} ."
+					loop do
+						s = q.deq # CircularQueue#deq blocks if the queue is empty.
+				    #sck.puts(s)
+				    l.debug "[Queue reader] deq: queue status: #{q.size}/#{q.capacity} ."
 				  end
 				end
 			end
@@ -43,6 +44,7 @@ module Brrr::Reader
 			# { Read traffic from Bro fill the queue.
 
 			result = start_reading(@bro_addr, @bro_port) do |j_str|
+				logger.debug "[Queue writer] enq: queue status: #{queue.size}/#{queue.capacity} ."
 				queue << j_str
 			end
 
