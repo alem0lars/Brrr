@@ -32,9 +32,9 @@ module Brrr::Reader
 				acc.each_accept do |sck|
 					l.info "[Acceptor] Client connected."
 					loop do
-						s = q.deq # CircularQueue#deq blocks if the queue is empty.
+						#s = q.deq # CircularQueue#deq blocks if the queue is empty.
 				    #sck.puts(s)
-				    l.debug "[Queue reader] deq: queue status: #{q.size}/#{q.capacity} ."
+				    #l.debug "[Queue reader] deq: queue status: #{q.size}/#{q.capacity} ."
 				  end
 				end
 			end
@@ -43,10 +43,11 @@ module Brrr::Reader
 
 			# { Read traffic from Bro fill the queue.
 
-			result = start_reading(@bro_addr, @bro_port) do |j_str|
-				logger.debug "[Queue writer] enq: queue status: #{queue.size}/#{queue.capacity} ."
+			enq_lambda = lambda do |j_str|
 				queue << j_str
+				logger.debug "[Queue writer] enq: queue status: #{queue.size}/#{queue.capacity} ."
 			end
+			result = start_reading(@bro_addr, @bro_port, enq_lambda)
 
 			# }
 

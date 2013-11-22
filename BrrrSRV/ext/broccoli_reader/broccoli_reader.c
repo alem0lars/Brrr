@@ -26,7 +26,7 @@
 
 // Defining a space for information and references about the module to be stored internally
 VALUE BroccoliReader = Qnil;
-VALUE block = Qnil;
+VALUE global_lambda = Qnil;
 
 // }
 
@@ -36,7 +36,7 @@ VALUE block = Qnil;
 // Prototype for the initialization method - Ruby calls this, not you
 void Init_broccoli_reader();
 // Wrapper around start_reading
-VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port);
+VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port, VALUE lambda);
 // Starts reading from broccoli
 static int start_reading(struct in_addr bro_addr, int bro_port);
 // Broccoli loop to process the input coming from the broccoli interface
@@ -55,24 +55,17 @@ static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint6
 
 void Init_broccoli_reader() {
     BroccoliReader = rb_define_module("BroccoliReader");
-    rb_define_method(BroccoliReader, "start_reading", method_start_reading, 2);
+    rb_define_method(BroccoliReader, "start_reading", method_start_reading, 3);
 }
 
 
-VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port) {
+VALUE method_start_reading(VALUE self, VALUE v_addr, VALUE v_port, VALUE lambda) {
     char* addr;
     unsigned int port;
     struct in_addr bro_addr;
     int bro_port;
 
-    // Set the global block. It will be called by the registered Bro handler
-    //   on_tcp_contents()
-    if(rb_block_given_p()) {
-        block = rb_block_proc();
-    }
-    else {
-        rb_raise(rb_eArgError, "a block is required");
-    }
+    global_lambda = lambda;
 
     addr = RSTRING_PTR(v_addr);
     port = NUM2UINT(v_port);
@@ -262,7 +255,7 @@ static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint6
     json_object* j_origin;
     json_object* j_responder;
     char* out_jstr;
-    VALUE r_out_jstr;
+    VALUE r_str;
 
     fprintf(stderr, "[TCP_CONTENTS]\n");
 
@@ -319,16 +312,15 @@ static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint6
     json_object_object_add(j_obj, "is_origin_data", json_object_new_boolean(*is_orig));
 
     out_jstr = json_object_to_json_string(j_obj);
-    r_out_jstr = rb_str_new2(out_jstr);
 
     // Call ruby block with out_jstr as argument.
-    rb_funcall(block, rb_intern("call"), 1, r_out_jstr);
+    rb_funcall(global_lambda, rb_intern("call"), 1, rb_str_new2(out_jstr));
 
     // }
 
     // Cleanup.
-    // TODO: Release refcount on out_jstr and other json objects.
-    // TODO: How is data passed to ruby? Is it safe to free what we did yield to the block?
+    json_object_put(j_obj);
+    free(data_b64);
     bc = NULL;
     user_data = NULL;
     return;
