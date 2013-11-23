@@ -18,9 +18,7 @@ module Brrr::Reader
 
 		def run
 			logger.info "Reader started."
-
 			Thread.abort_on_exception = true
-
 			queue = CircularQueue.new(@queue_size)
 
 			# { Accept incoming connection and push queue contents to socket.
@@ -29,11 +27,21 @@ module Brrr::Reader
 			logger.info "Accepting connections on #{@listen_addr}:#{@listen_port}/tcp ..."
 
 			acc_thr = Thread.new(logger, acceptor, queue) do |l, acc, q|
-				acc.each_accept do |sck|
+				# { Set acceptor hooks.
+				acc.before_accept do
+					l.info "[Acceptor] Accepting ..."
+				end
+				acc.on_conn_term do
+					l.info "[Acceptor] Finishing to serve a client."
+				end
+				# }
+
+				# Start serving clients.
+				acc.start_accept do |sck|
 					l.info "[Acceptor] Client connected."
 					while s = q.deq # CircularQueue#deq blocks if the queue is empty.
-				    sck.puts(s) # TODO: handle client disconnect.
-				    l.debug "[Queue reader] deq: queue status: #{q.size}/#{q.capacity} ."
+				    sck.puts(s)
+				    #l.debug "[Queue reader] deq: queue status: #{q.size}/#{q.capacity} ."
 				  end
 				end
 			end
@@ -44,7 +52,7 @@ module Brrr::Reader
 
 			enq_lambda = lambda do |j_str|
 				queue << j_str
-				logger.debug "[Queue writer] enq: queue status: #{queue.size}/#{queue.capacity} ."
+				#logger.debug "[Queue writer] enq: queue status: #{queue.size}/#{queue.capacity} ."
 			end
 			result = start_reading(@bro_addr, @bro_port, enq_lambda)
 

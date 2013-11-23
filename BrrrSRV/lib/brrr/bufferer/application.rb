@@ -14,14 +14,14 @@ module Brrr::Bufferer
 			@port = (args[1] || 7999).to_i
 			@queue_size = (args[2] || 128).to_i
 		end
-		
+
 		def run
 			logger.info("Started buffering")
-			
+
 			Thread.abort_on_exception = true
 
 			queue = CircularQueue.new(@queue_size)
-			
+
 			cap_thr = Thread.new do
 				# process capturer's output
 				logger.info("Capturer started")
@@ -43,7 +43,7 @@ module Brrr::Bufferer
 					sck = conn_sck.accept
 
 				    logger.info("[Acceptor] Client connected")
-				    
+
 				    # serve the client
 				    begin
 				      	while s = queue.deq # CircularQueue#deq blocks if the queue is empty.

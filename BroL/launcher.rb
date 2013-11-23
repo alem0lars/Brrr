@@ -130,11 +130,11 @@ class Launcher
     FileUtils.cd($paths.tmp) do
       puts "Launching: #{@cmd}"
 
-      Open3.popen3(@cmd) { |stdin, stdout, stderr, wait_thr|
+      Open3.popen2e(@cmd) { |stdin, stdout_stderr, wait_thr|
         pid = wait_thr.pid # pid of the started process.
+        stdin.close
 
-        # TODO: poll stdout and stderr
-        while line = stdout.gets
+        while line = stdout_stderr.gets
           puts line
         end
 
