@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.GridPane?>
+
+<GridPane alignment="CENTER"
+          gridLinesVisible="false"
+          hgap="10.0"
+          style=""
+          styleClass="logElement"
+          vgap="10.0"
+          xmlns:fx="http://javafx.com/fxml/1"
+          xmlns="http://javafx.com/javafx/2.2">
+  <children>
+    <TableView styleClass="logElement"
+               prefHeight="200.0"
+               prefWidth="200.0"
+               GridPane.columnIndex="0"
+               GridPane.rowIndex="0">
+      <columns>
+        <TableColumn styleClass="logElementName"
+                     prefWidth="75.0"
+                     text="Name"/>
+        <TableColumn styleClass="logElementDateTime"
+                     prefWidth="75.0"
+                     text="DateTime"/>
+        <TableColumn styleClass="logElementContent"
+                     prefWidth="75.0"
+                     text="Content"/>
+      </columns>
+    </TableView>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES"
+                       minWidth="10.0"/>
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0"
+                    vgrow="SOMETIMES"/>
+  </rowConstraints>
+  <stylesheets>
+    <URL value="@../styles/log_element.css"/>
+  </stylesheets>
+</GridPane>

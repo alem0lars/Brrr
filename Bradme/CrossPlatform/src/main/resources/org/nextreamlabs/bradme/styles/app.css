@@ -1,0 +1,21 @@
+.container {
+
+}
+
+.app {
+  -fx-padding: 20px 30px;
+}
+
+.componentsDashboardTitle {
+  -fx-padding: 0 60px 10px 0;
+  -fx-font-weight: bold;
+}
+
+.detailsTitle {
+  -fx-padding: 0 0 10px 20px;
+  -fx-font-weight: bold;
+}
+
+.components {
+  -fx-padding: 0 0 30px 0;
+}

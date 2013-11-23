@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.GridPane?>
+
+<GridPane alignment="CENTER"
+          gridLinesVisible="false"
+          hgap="10.0"
+          styleClass="component"
+          vgap="10.0"
+          xmlns:fx="http://javafx.com/fxml/1"
+          xmlns="http://javafx.com/javafx/2.2">
+
+  <children>
+
+    <Label fx:id="componentNameControl"
+           styleClass="componentName"
+           text="### Component Name ###"
+           textAlignment="RIGHT"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="0"/>
+
+    <ProgressIndicator progress="0.0"
+                       styleClass="componentStatus"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="0"/>
+
+    <Button fx:id="componentActionControl"
+            mnemonicParsing="false"
+            styleClass="componentAction"
+            text="### Action ###"
+            GridPane.columnIndex="2"
+            GridPane.rowIndex="0"
+            onAction="#onComponentAction"/>
+
+  </children>
+
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER"
+                       minWidth="10.0"/>
+    <ColumnConstraints hgrow="SOMETIMES"
+                       minWidth="10.0"/>
+    <ColumnConstraints hgrow="SOMETIMES"
+                       minWidth="10.0"/>
+  </columnConstraints>
+
+  <rowConstraints>
+    <RowConstraints minHeight="10.0"
+                    vgrow="NEVER"/>
+  </rowConstraints>
+
+  <stylesheets>
+    <URL value="@../styles/component.css"/>
+  </stylesheets>
+
+</GridPane>

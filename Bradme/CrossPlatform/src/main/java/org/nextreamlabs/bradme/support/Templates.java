@@ -1,5 +1,7 @@
 package org.nextreamlabs.bradme.support;
 
+import org.nextreamlabs.bradme.exceptions.TemplateNotFoundException;
+
 import java.net.URL;
 
 public class Templates {
@@ -17,7 +19,12 @@ public class Templates {
   // }
 
   public static URL getTemplateURL(String templateName) {
-    return Templates.class.getResource(String.format(TEMPLATE_PATH, templateName));
+    String templatePath = String.format(TEMPLATE_PATH, templateName);
+    URL templateURL = Templates.class.getResource(templatePath);
+    if (templateURL == null) {
+      throw TemplateNotFoundException.create(templatePath);
+    }
+    return templateURL;
   }
 
 }

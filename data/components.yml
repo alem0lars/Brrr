@@ -1,0 +1,24 @@
+components:
+  - id: brol
+    statuses: stopped
+    dependencies: []
+  - id: reader
+    statuses: stopped
+    dependencies:
+      - component: brol
+        status: started
+  - id: bufferer
+    statuses: stopped
+    dependencies:
+      - component: reader
+        status: started
+  - id: pusher
+    statuses: stopped
+    dependencies:
+      - component: bufferer
+        status: started
+
+statuses:
+  - id: starting
+  - id: started
+  - id: stopped

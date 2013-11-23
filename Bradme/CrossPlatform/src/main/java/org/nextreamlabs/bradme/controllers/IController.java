@@ -1,5 +1,10 @@
 package org.nextreamlabs.bradme.controllers;
 
-public interface IController {
-  // INF: Empty
+public interface IController  {
+
+  /**
+   * Initializes the controller.
+   */
+  public void initialize();
+
 }
