@@ -1,13 +1,13 @@
 package org.nextreamlabs.bradme;
 
 import javafx.application.Application;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.nextreamlabs.bradme.controllers.AppController;
-import org.nextreamlabs.bradme.factories.MVCFactory;
+import org.nextreamlabs.bradme.controllers.IController;
 import org.nextreamlabs.bradme.support.L10N;
 import org.nextreamlabs.bradme.support.Logging;
+import org.nextreamlabs.bradme.views.AppView;
 
 /**
  * The application entry point.
@@ -26,14 +26,10 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
     Logging.info("Application starting");
-    Parent root = MVCFactory.getInstance().createForTemplate("app", new MVCFactory.IControllerFactory() {
-      @Override
-      public AppController createController() {
-        return new AppController();
-      }
-    }, Parent.class);
+    IController appController = new AppController();
+    AppView appView = AppView.create(appController);
     primaryStage.setTitle(L10N.t("bradme_title"));
-    primaryStage.setScene(new Scene(root, MAIN_SCENE_WIDTH, MAIN_SCENE_HEIGHT));
+    primaryStage.setScene(new Scene(appView.getRootNode(), MAIN_SCENE_WIDTH, MAIN_SCENE_HEIGHT));
     primaryStage.show();
     Logging.info("Application started");
   }

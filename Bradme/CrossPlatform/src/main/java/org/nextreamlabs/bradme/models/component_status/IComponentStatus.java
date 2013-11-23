@@ -7,6 +7,7 @@ public interface IComponentStatus extends IModel {
 
   public StringProperty name();
   public StringProperty desc();
+  public StringProperty actionName();
   public String getPrettyName();
 
 }

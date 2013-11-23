@@ -24,10 +24,12 @@
            GridPane.columnIndex="0"
            GridPane.rowIndex="0"/>
 
-    <ProgressIndicator progress="0.0"
-                       styleClass="componentStatus"
-                       GridPane.columnIndex="1"
-                       GridPane.rowIndex="0"/>
+    <Label fx:id="componentStatusControl"
+           styleClass="componentStatus"
+           text="### Component Status ###"
+           textAlignment="RIGHT"
+           GridPane.rowIndex="0"
+           GridPane.columnIndex="1"/>
 
     <Button fx:id="componentActionControl"
             mnemonicParsing="false"

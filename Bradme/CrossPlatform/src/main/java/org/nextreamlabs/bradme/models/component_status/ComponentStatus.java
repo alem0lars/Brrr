@@ -7,16 +7,18 @@ public class ComponentStatus implements IComponentStatus {
 
   private StringProperty name;
   private StringProperty desc;
+  private StringProperty actionName;
 
   // { Construction
 
-  private ComponentStatus(StringProperty name, StringProperty desc) {
+  private ComponentStatus(StringProperty name, StringProperty desc, StringProperty actionName) {
     this.name = name;
     this.desc = desc;
+    this.actionName = actionName;
   }
 
-  public static IComponentStatus create(String name, String desc) {
-    return new ComponentStatus(new SimpleStringProperty(name), new SimpleStringProperty(desc));
+  public static IComponentStatus create(String name, String desc, String actionName) {
+    return new ComponentStatus(new SimpleStringProperty(name), new SimpleStringProperty(desc), new SimpleStringProperty(actionName));
   }
 
   // }
@@ -29,6 +31,10 @@ public class ComponentStatus implements IComponentStatus {
 
   public StringProperty desc() {
     return this.desc;
+  }
+
+  public StringProperty actionName() {
+    return this.actionName;
   }
 
   public String getPrettyName() {

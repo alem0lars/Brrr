@@ -26,8 +26,11 @@ public class ComponentStatusesFactory
   // { ModelFactoryWithCache implementation
 
   @Override
-  protected IComponentStatus createElement(ComponentStatusDescriptor statusType) {
-    return ComponentStatus.create(L10N.t(statusType.nameKey), L10N.t(statusType.descKey));
+  protected IComponentStatus createElement(ComponentStatusDescriptor componentStatusDescriptor) {
+    return ComponentStatus.create(
+        L10N.t(componentStatusDescriptor.nameKey),
+        L10N.t(componentStatusDescriptor.descKey),
+        L10N.t(componentStatusDescriptor.actionNameKey));
   }
 
   @Override

@@ -14,6 +14,8 @@ public class ComponentController extends Controller implements IController {
   @FXML
   protected Label componentNameControl;
   @FXML
+  protected Label componentStatusControl;
+  @FXML
   protected Button componentActionControl;
 
   // }
@@ -39,6 +41,7 @@ public class ComponentController extends Controller implements IController {
   public void initialize() {
     super.initialize();
     this.initializeComponentName();
+    this.initializeComponentStatus();
     this.initializeComponentAction();
   }
 
@@ -50,8 +53,12 @@ public class ComponentController extends Controller implements IController {
     this.componentNameControl.textProperty().bindBidirectional(this.component.name());
   }
 
+  protected void initializeComponentStatus() {
+    this.componentStatusControl.textProperty().bindBidirectional(this.component.currentStatus().name());
+  }
+
   protected void initializeComponentAction() {
-    this.componentActionControl.textProperty().bindBidirectional(this.component.status().name());
+    this.componentActionControl.textProperty().bindBidirectional(this.component.nextStatus().actionName());
     this.componentActionControl.disableProperty().bind(this.component.areDependenciesSatisfied().not());
   }
 
@@ -62,6 +69,7 @@ public class ComponentController extends Controller implements IController {
   @FXML
   protected void onComponentAction(ActionEvent actionEvent) {
     Logging.debug(String.format("Clicked on action for component: %s", this.component));
+    this.component.execute();
   }
 
   // }

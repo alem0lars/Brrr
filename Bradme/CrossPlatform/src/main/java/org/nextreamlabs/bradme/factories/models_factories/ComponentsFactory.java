@@ -9,7 +9,9 @@ import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
 import org.nextreamlabs.bradme.support.L10N;
 import org.nextreamlabs.bradme.support.Logging;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class ComponentsFactory
@@ -37,10 +39,14 @@ public class ComponentsFactory
   @Override
   protected IComponent createElement(ComponentDescriptor componentDescriptor) {
     Map<IComponent, IComponentStatus> dependencies = this.createDependencies(componentDescriptor.dependencies);
+    Collection<IComponentStatus> statuses = new LinkedList<>();
+    for (ComponentStatusDescriptor componentStatusDescriptor : componentDescriptor.statuses) {
+      statuses.add(this.componentStatusesFactory.get(componentStatusDescriptor));
+    }
     return Component.create(
         L10N.t(componentDescriptor.nameKey),
         L10N.t(componentDescriptor.descKey),
-        this.componentStatusesFactory.get(componentDescriptor.initialStatus),
+        new LinkedList<>(statuses),
         dependencies);
   }
 

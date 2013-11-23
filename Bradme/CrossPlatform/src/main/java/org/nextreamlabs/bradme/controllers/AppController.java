@@ -1,5 +1,6 @@
 package org.nextreamlabs.bradme.controllers;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -7,19 +8,22 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import org.nextreamlabs.bradme.dal.DALLoader;
 import org.nextreamlabs.bradme.dal.descriptors.ComponentDescriptor;
 import org.nextreamlabs.bradme.dal.repositories.AvailableComponentStatusesRepository;
 import org.nextreamlabs.bradme.dal.repositories.AvailableComponentsRepository;
-import org.nextreamlabs.bradme.factories.MVCFactory;
+import org.nextreamlabs.bradme.exceptions.CannotCreateViewException;
 import org.nextreamlabs.bradme.factories.models_factories.ComponentStatusesFactory;
 import org.nextreamlabs.bradme.factories.models_factories.ComponentsFactory;
 import org.nextreamlabs.bradme.models.component.IComponent;
 import org.nextreamlabs.bradme.support.L10N;
 import org.nextreamlabs.bradme.support.Logging;
+import org.nextreamlabs.bradme.views.ComponentView;
+import org.nextreamlabs.bradme.views.DialogView;
+import org.nextreamlabs.bradme.views.IStandaloneView;
+import org.nextreamlabs.bradme.views.IViewWithTemplate;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;
@@ -61,17 +65,7 @@ public class AppController extends Controller implements IController {
   // { Construction
 
   public AppController() {
-    this.isConfigured = new SimpleBooleanProperty(false);
-    this.isConfigured.addListener(new ChangeListener<Boolean>() {
-      @Override
-      public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
-        if (newValue) {
-          AppController.this.initializeComponents();
-        } else {
-          AppController.this.initializeEmptyComponents();
-        }
-      }
-    });
+    this.initializeIsConfigured();
   }
 
   // }
@@ -102,19 +96,21 @@ public class AppController extends Controller implements IController {
       this.componentsFactory = ComponentsFactory.create(this.componentStatusesFactory);
       this.isConfigured.setValue(true);
     } catch (FileNotFoundException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-      // TODO
+      this.isConfigured.setValue(false);
     }
   }
 
   @FXML
   protected void showAboutDialog() {
     Logging.debug("Showing the about dialog");
+    IStandaloneView dialogView = DialogView.create(L10N.t("about_content"));
+    dialogView.show();
   }
 
   @FXML
   protected void close() {
     Logging.debug("Closing the application");
+    Platform.exit();
   }
 
   // }
@@ -136,6 +132,20 @@ public class AppController extends Controller implements IController {
     this.componentsControl.getChildren().clear();
   }
 
+  protected void initializeIsConfigured() {
+    this.isConfigured = new SimpleBooleanProperty(false);
+    this.isConfigured.addListener(new ChangeListener<Boolean>() {
+      @Override
+      public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+        if (newValue) {
+          AppController.this.initializeComponents();
+        } else {
+          AppController.this.initializeEmptyComponents();
+        }
+      }
+    });
+  }
+
   protected void initializeComponents() {
     for (ComponentDescriptor componentDescriptor : AvailableComponentsRepository.getInstance().values()) {
       IComponent component = this.componentsFactory.get(componentDescriptor);
@@ -145,14 +155,13 @@ public class AppController extends Controller implements IController {
     }
 
     for (final IComponent component : this.components) {
-      Node node = MVCFactory.getInstance().createForTemplate("component", new MVCFactory.IControllerFactory() {
-        @Override
-        public ComponentController createController() {
-          return new ComponentController(component);
-        }
-      }, Node.class);
-      if (node != null) {
-        this.componentsControl.getChildren().add(node);
+      IController controller = new ComponentController(component);
+
+      try {
+        IViewWithTemplate appView = ComponentView.create(controller);
+        this.componentsControl.getChildren().add(appView.getRootNode());
+      } catch(CannotCreateViewException exc) {
+        Logging.warn(String.format("Skipping the component: %s. Reason: %s", component, exc.getMessage()));
       }
     }
   }
