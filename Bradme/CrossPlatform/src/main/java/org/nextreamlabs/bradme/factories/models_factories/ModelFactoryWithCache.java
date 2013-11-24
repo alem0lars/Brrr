@@ -22,7 +22,7 @@ public abstract class ModelFactoryWithCache<TKey, TValue extends IModel> impleme
     return this.cache.get(key);
   }
 
-  public TValue getOrCreate(TKey key) {
+  public TValue getNew(TKey key) {
     return this.cache.put(key, this.createElement(key));
   }
 

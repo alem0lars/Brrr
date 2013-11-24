@@ -1,10 +1,15 @@
 package org.nextreamlabs.bradme.controllers;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import org.nextreamlabs.bradme.models.component.IComponent;
+import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
 import org.nextreamlabs.bradme.support.Logging;
 
 public class ComponentController extends Controller implements IController {
@@ -23,14 +28,14 @@ public class ComponentController extends Controller implements IController {
   // { Models
 
   @FXML
-  protected final IComponent component;
+  protected final ObjectProperty<IComponent> component;
 
   // }
 
   // { Construction
 
   public ComponentController(IComponent component) {
-    this.component = component;
+    this.component = new SimpleObjectProperty<>(component);
   }
 
   // }
@@ -40,26 +45,58 @@ public class ComponentController extends Controller implements IController {
   @Override
   public void initialize() {
     super.initialize();
-    this.initializeComponentName();
-    this.initializeComponentStatus();
-    this.initializeComponentAction();
+    this.bindComponentNameControl();
+    this.bindComponentActionControl();
+    this.bindComponentStatusControl();
   }
 
   // }
 
   // { Initialization
 
-  protected void initializeComponentName() {
-    this.componentNameControl.textProperty().bindBidirectional(this.component.name());
+  private void bindComponentNameControl() {
+    this.component.addListener(new ChangeListener<IComponent>() {
+      @Override
+      public void changed(ObservableValue<? extends IComponent> v, IComponent oldComponent, IComponent newComponent) {
+        componentNameControl.textProperty().unbind();
+        componentNameControl.textProperty().bind(component.getValue().name());
+      }
+    });
+
+    componentNameControl.textProperty().bind(component.getValue().name());
   }
 
-  protected void initializeComponentStatus() {
-    this.componentStatusControl.textProperty().bindBidirectional(this.component.currentStatus().name());
+  private void bindComponentActionControl() {
+    this.component.getValue().nextStatus().addListener(new ChangeListener<IComponentStatus>() {
+      @Override
+      public void changed(ObservableValue<? extends IComponentStatus> observableValue, IComponentStatus iComponentStatus, IComponentStatus iComponentStatus2) {
+        componentActionControl.textProperty().unbind();
+        componentActionControl.textProperty().bind(component.getValue().nextStatus().getValue().actionName());
+      }
+    });
+
+    this.component.getValue().areDependenciesSatisfied().addListener(new ChangeListener<Boolean>() {
+      @Override
+      public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean aBoolean2) {
+        componentActionControl.disableProperty().unbind();
+        componentActionControl.disableProperty().bind(component.getValue().areDependenciesSatisfied().not());
+      }
+    });
+
+    componentActionControl.textProperty().bind(component.getValue().nextStatus().getValue().actionName());
+    componentActionControl.disableProperty().bind(component.getValue().areDependenciesSatisfied().not());
   }
 
-  protected void initializeComponentAction() {
-    this.componentActionControl.textProperty().bindBidirectional(this.component.nextStatus().actionName());
-    this.componentActionControl.disableProperty().bind(this.component.areDependenciesSatisfied().not());
+  private void bindComponentStatusControl() {
+    this.component.getValue().currentStatus().addListener(new ChangeListener<IComponentStatus>() {
+      @Override
+      public void changed(ObservableValue<? extends IComponentStatus> v, IComponentStatus oldStatus, IComponentStatus newStatus) {
+        componentStatusControl.textProperty().unbind();
+        componentStatusControl.textProperty().bind(component.getValue().currentStatus().getValue().name());
+      }
+    });
+
+    componentStatusControl.textProperty().bind(component.getValue().currentStatus().getValue().name());
   }
 
   // }
@@ -68,8 +105,8 @@ public class ComponentController extends Controller implements IController {
 
   @FXML
   protected void onComponentAction(ActionEvent actionEvent) {
-    Logging.debug(String.format("Clicked on action for component: %s", this.component));
-    this.component.execute();
+    Logging.debug(String.format("Clicked on action for component: %s", this.component.getValue()));
+    this.component.getValue().execute();
   }
 
   // }

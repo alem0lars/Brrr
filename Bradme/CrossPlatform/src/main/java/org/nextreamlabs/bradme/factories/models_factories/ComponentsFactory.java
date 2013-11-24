@@ -41,7 +41,7 @@ public class ComponentsFactory
     Map<IComponent, IComponentStatus> dependencies = this.createDependencies(componentDescriptor.dependencies);
     Collection<IComponentStatus> statuses = new LinkedList<>();
     for (ComponentStatusDescriptor componentStatusDescriptor : componentDescriptor.statuses) {
-      statuses.add(this.componentStatusesFactory.get(componentStatusDescriptor));
+      statuses.add(this.componentStatusesFactory.getNew(componentStatusDescriptor));
     }
     return Component.create(
         L10N.t(componentDescriptor.nameKey),
@@ -70,7 +70,7 @@ public class ComponentsFactory
       ComponentDescriptor componentDescriptor = entry.getKey();
       ComponentStatusDescriptor statusDescriptor = entry.getValue();
       IComponent component = this.get(componentDescriptor);
-      IComponentStatus componentStatus = this.componentStatusesFactory.get(statusDescriptor);
+      IComponentStatus componentStatus = this.componentStatusesFactory.getNew(statusDescriptor);
       dependencies.put(component, componentStatus);
     }
 
