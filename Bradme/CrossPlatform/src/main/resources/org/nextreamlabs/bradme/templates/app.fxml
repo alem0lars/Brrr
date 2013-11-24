@@ -16,31 +16,24 @@
           vgap="10.0"
           xmlns:fx="http://javafx.com/fxml/1"
           xmlns="http://javafx.com/javafx/2.2">
-  <children>
 
     <MenuBar GridPane.columnIndex="0"
              GridPane.rowIndex="0">
-      <menus>
         <Menu mnemonicParsing="false"
               text="### File ###">
-          <items>
             <MenuItem mnemonicParsing="false"
                       text="### Load ###"
                       onAction="#loadData"/>
             <MenuItem mnemonicParsing="false"
                       text="### Close ###"
                       onAction="#close"/>
-          </items>
         </Menu>
         <Menu mnemonicParsing="false"
               text="### Help ###">
-          <items>
             <MenuItem mnemonicParsing="false"
                       text="### About ###"
                       onAction="#showAboutDialog"/>
-          </items>
         </Menu>
-      </menus>
     </MenuBar>
 
     <GridPane alignment="TOP_LEFT"
@@ -50,7 +43,6 @@
               vgap="10.0"
               GridPane.columnIndex="0"
               GridPane.rowIndex="1">
-      <children>
         <Label fx:id="componentsDashboardTitleControl"
                styleClass="componentsDashboardTitle"
                text="### Components Dashboard ###"
@@ -73,7 +65,6 @@
               styleClass="components"
               GridPane.columnIndex="0"
               GridPane.rowIndex="1"/>
-      </children>
       <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES"/>
         <ColumnConstraints hgrow="NEVER"/>
@@ -89,7 +80,6 @@
       </rowConstraints>
     </GridPane>
 
-  </children>
 
   <columnConstraints>
     <ColumnConstraints hgrow="ALWAYS"/>

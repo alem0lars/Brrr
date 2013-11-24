@@ -13,15 +13,12 @@
           style=""
           styleClass="logViewer"
           vgap="10.0"
-          xmlns:fx="http://javafx.com/fxml/1"
           xmlns="http://javafx.com/javafx/2.2">
-  <children>
     <TabPane prefHeight="200.0"
              prefWidth="200.0"
              tabClosingPolicy="UNAVAILABLE"
              GridPane.columnIndex="0"
              GridPane.rowIndex="0"/>
-  </children>
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES"
                        minWidth="10.0"/>

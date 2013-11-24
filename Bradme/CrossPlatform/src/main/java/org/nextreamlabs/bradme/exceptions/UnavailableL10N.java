@@ -1,8 +1,8 @@
 package org.nextreamlabs.bradme.exceptions;
 
-public class UnavailableL10N extends RuntimeException {
+public class UnavailableL10N extends RuntimeException implements IException {
 
-  protected String stringKey;
+  protected final String stringKey;
 
   // { Construction
 

@@ -65,8 +65,8 @@ public class DALLoader implements IDALLoader {
     this.ensureContains(this.loadedContent, componentsKey);
     List loadedComponents = typize(loadedContent.get(componentsKey), String.format("%s doesn't contain a list", componentsKey));
 
-    for (int i = 0; i < loadedComponents.size(); i++) {
-      Map<String, Object> componentInfo = this.typize(loadedComponents.get(i), String.format("Invalid component info"));
+    for (Object loadedComponent : loadedComponents) {
+      Map<String, Object> componentInfo = this.typize(loadedComponent, String.format("Invalid component info"));
 
       this.ensureContains(componentInfo, "id");
       String componentId = this.typize(componentInfo.get("id"), String.format("the component id should be a string"));

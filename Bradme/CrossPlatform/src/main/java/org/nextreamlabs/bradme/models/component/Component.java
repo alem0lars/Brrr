@@ -140,7 +140,6 @@ public class Component implements IComponent {
     });
     for (Map.Entry<ObjectProperty<IComponent>, ObjectProperty<IComponentStatus>> entry : this.dependencies().entrySet()) {
       ObjectProperty<IComponent> dependency = entry.getKey();
-      ObjectProperty<IComponentStatus> dependencyRequiredStatus = entry.getValue();
       dependency.addListener(new ChangeListener<IComponent>() {
         @Override
         public void changed(ObservableValue<? extends IComponent> observableValue, IComponent iComponent, IComponent iComponent2) {

@@ -14,9 +14,6 @@
           vgap="10.0"
           xmlns:fx="http://javafx.com/fxml/1"
           xmlns="http://javafx.com/javafx/2.2">
-
-  <children>
-
     <Label fx:id="componentNameControl"
            styleClass="componentName"
            text="### Component Name ###"
@@ -38,8 +35,6 @@
             GridPane.columnIndex="2"
             GridPane.rowIndex="0"
             onAction="#onComponentAction"/>
-
-  </children>
 
   <columnConstraints>
     <ColumnConstraints hgrow="NEVER"

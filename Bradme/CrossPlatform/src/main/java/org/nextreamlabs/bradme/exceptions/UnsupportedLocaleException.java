@@ -2,9 +2,9 @@ package org.nextreamlabs.bradme.exceptions;
 
 import java.util.Locale;
 
-public class UnsupportedLocaleException extends RuntimeException {
+public class UnsupportedLocaleException extends RuntimeException implements IException {
 
-  protected Locale currentLocale;
+  protected final Locale currentLocale;
 
   // { Construction
 

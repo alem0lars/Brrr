@@ -34,8 +34,12 @@ public class ComponentController extends Controller implements IController {
 
   // { Construction
 
-  public ComponentController(IComponent component) {
+  private ComponentController(IComponent component) {
     this.component = new SimpleObjectProperty<>(component);
+  }
+
+  public static ComponentController create(IComponent component) {
+    return new ComponentController(component);
   }
 
   // }

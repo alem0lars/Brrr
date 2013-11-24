@@ -1,8 +1,8 @@
 package org.nextreamlabs.bradme.exceptions;
 
-public class TemplateNotFoundException extends RuntimeException {
+public class TemplateNotFoundException extends RuntimeException implements ITemplateNotFoundException {
 
-  protected String templatePath;
+  protected final String templatePath;
 
   // { Construction
 
@@ -30,8 +30,12 @@ public class TemplateNotFoundException extends RuntimeException {
 
   // }
 
+  // { ITemplateNotFoundException implementation
+
   public String getTemplatePath() {
     return this.templatePath;
   }
+
+  // }
 
 }

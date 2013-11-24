@@ -26,7 +26,7 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
     Logging.info("Application starting");
-    IController appController = new AppController();
+    IController appController = AppController.create();
     AppView appView = AppView.create(appController);
     primaryStage.setTitle(L10N.t("bradme_title"));
     primaryStage.setScene(new Scene(appView.getRootNode(), MAIN_SCENE_WIDTH, MAIN_SCENE_HEIGHT));

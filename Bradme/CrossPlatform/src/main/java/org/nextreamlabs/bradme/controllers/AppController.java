@@ -64,8 +64,12 @@ public class AppController extends Controller implements IController {
 
   // { Construction
 
-  public AppController() {
+  private AppController() {
     this.initializeIsConfigured();
+  }
+
+  public static AppController create() {
+    return new AppController();
   }
 
   // }
@@ -155,7 +159,7 @@ public class AppController extends Controller implements IController {
     }
 
     for (final IComponent component : this.components) {
-      IController controller = new ComponentController(component);
+      IController controller = ComponentController.create(component);
 
       try {
         IViewWithTemplate appView = ComponentView.create(controller);

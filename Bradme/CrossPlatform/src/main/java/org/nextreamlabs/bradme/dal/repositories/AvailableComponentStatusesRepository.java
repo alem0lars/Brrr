@@ -8,9 +8,9 @@ import java.util.Collection;
 
 public class AvailableComponentStatusesRepository
     extends Repository<ComponentStatusDescriptor>
-    implements IRepository<ComponentStatusDescriptor> {
+    implements IAvailableComponentStatusesRepository {
 
-  private static AvailableComponentStatusesRepository instance;
+  private static IAvailableComponentStatusesRepository instance;
 
   // { Construction
 
@@ -26,9 +26,10 @@ public class AvailableComponentStatusesRepository
     return instance != null;
   }
 
-  public static AvailableComponentStatusesRepository getInstance() {
-    if (!isConfigured())
+  public static IAvailableComponentStatusesRepository getInstance() {
+    if (!isConfigured()) {
       throw InvalidConfigurationException.create("AvailableComponentStatusRepository instance not configured yet");
+    }
     return instance;
   }
 

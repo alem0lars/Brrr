@@ -8,9 +8,9 @@ import java.util.Collection;
 
 public class AvailableComponentsRepository
     extends Repository<ComponentDescriptor>
-    implements IRepository<ComponentDescriptor> {
+    implements IAvailableComponentsRepository {
 
-  private static AvailableComponentsRepository instance;
+  private static IAvailableComponentsRepository instance;
 
   // { Construction
 
@@ -27,9 +27,10 @@ public class AvailableComponentsRepository
     return instance != null;
   }
 
-  public static AvailableComponentsRepository getInstance() {
-    if (!isConfigured())
+  public static IAvailableComponentsRepository getInstance() {
+    if (!isConfigured()) {
       throw InvalidConfigurationException.create("AvailableComponentsRepository instance not configured yet");
+    }
     return instance;
   }
 

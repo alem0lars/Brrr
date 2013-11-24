@@ -1,8 +1,8 @@
 package org.nextreamlabs.bradme.exceptions;
 
-public class InvalidConfigurationException extends RuntimeException {
+public class InvalidConfigurationException extends RuntimeException implements IException {
 
-  protected String message;
+  protected final String message;
 
   // { Construction
 
