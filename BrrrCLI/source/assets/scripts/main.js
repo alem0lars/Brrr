@@ -22,6 +22,8 @@ require.config({
     "ember-data": { deps: ["ember"], exports: 'DS' },
     
     "lodash": { exports: ["_"] },
+
+    "logger": { },
     
     "foundation/foundation-alerts": { deps: ["foundation/foundation"] },
     "foundation/foundation-clearing": { deps: ["foundation/foundation"] },
@@ -43,11 +45,15 @@ require.config({
 
 
 require([
+  "logger",
+  "text",
   "modernizr",
-  "app/misc/foundation",
-], function() {
-  'use strict';
+  "app/misc/foundation"
+], function(logger) {
+  "use strict";
   
-	console.log(">>> App Started !");
+  logger.useDefaults();
+  
+  logger.info("BrrrCLI Started");
 
 });

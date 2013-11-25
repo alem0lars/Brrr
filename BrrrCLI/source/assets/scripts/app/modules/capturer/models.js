@@ -1,15 +1,22 @@
 // A facade over all of the models.
 define([
+  "logger",
   "app/modules/capturer/models/chunk",
   "app/modules/capturer/models/connection",
   "app/modules/capturer/models/endpoint"
-], function(Chunk, Connection, Endpoint) {
-  'use strict';
+], function(logger, Chunk, Connection, Endpoint) {
+  "use strict";
   
-  return {
+
+  logger.info("Loading models Chunk, Connection, Endpoint");
+  
+  var models = {
     Chunk: Chunk,
     Connection: Connection,
     Endpoint: Endpoint
   };
+
+
+  return models;
   
 });

@@ -1,11 +1,12 @@
 define([
   "jquery",
+  "logger",
   "ember",
   "ember-data",
   "app/modules/module",
   "app/modules/capturer/router",
-  "app/modules/capturer/models" 
-], function($, Ember, DS, Module, Router, models) {
+  "app/modules/capturer/models"
+], function($, logger, Ember, DS, Module, Router, models) {
   'use strict';
   
   function Capturer(rootSelector) {
@@ -36,18 +37,18 @@ define([
     self.app.ApplicationAdapter = DS.FixtureAdapter.extend();
  
     // Initialize the routing.
-    var router = new Router(self.app);
+    var router = new Router(self.app, self.rootSelector);
     
     _.each(models, function(model, modelName) {
       self.app[modelName] = model;
     })
     
-    console.log(">>> Capturer app (version=" + this.version + ") has been initialized");
+    logger.info("Capturer app (version=" + this.version + ") has been initialized");
   }
   
   Capturer.prototype.refresh = function() {
-    console.log(">>> Refreshing the capturer");
-    // TODO
+    logger.info("Refreshing the capturer");
+    // TODO: Implement
   };
   
   

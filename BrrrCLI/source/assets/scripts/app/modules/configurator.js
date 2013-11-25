@@ -1,8 +1,9 @@
 define([
   "jquery",
+  "logger",
   "app/modules/module"
-], function($, Module) {
-  'use strict';
+], function($, logger, Module) {
+  "use strict";
 
   var Configurator = function(configElems) {
     var self = this;
@@ -43,21 +44,21 @@ define([
   };
   
   Configurator.prototype.saveConfigs = function() {  
-    console.log(">>> Updating the stored configurations");
+    logger.info(">>> Updating the stored configurations");
     _.each(this.configElems, function(configElem, index) {
       configElem.save($(configElem.inputSelector).val());
     });
   };
   
   Configurator.prototype.loadConfigs = function() {
-    console.log(">>> Loading the stored configurations");
+    logger.info(">>> Loading the stored configurations");
     _.each(this.configElems, function(configElem, index) {
       configElem.load();
     });
   };
   
   Configurator.prototype.clearConfigs = function() {    
-    console.log(">>> Clearing the stored configurations");
+    logger.info(">>> Clearing the stored configurations");
     _.each(this.configElems, function(configElem, index) {
       configElem.clear();
     });
