@@ -15,15 +15,13 @@ require.config({
     "foundation/foundation": { deps: ["jquery"] },
     
     "store": { deps: ["jquery"] },
-    
-    "handlebars": { deps: [] },
-    
-    "ember": { deps: ["handlebars"], exports: 'Ember' },
-    "ember-data": { deps: ["ember"], exports: 'DS' },
-    
-    "lodash": { exports: ["_"] },
 
     "logger": { },
+    
+    "lodash": { exports: ["_"] },
+    
+    "backbone/backbone": { deps: ["lodash", "jquery"], exports: "Backbone" },
+    "backbone/backbone-relational": { deps: ["backbone/backbone"] },
     
     "foundation/foundation-alerts": { deps: ["foundation/foundation"] },
     "foundation/foundation-clearing": { deps: ["foundation/foundation"] },

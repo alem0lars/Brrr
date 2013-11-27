@@ -1,22 +1,21 @@
 define([
   "jquery",
   "logger",
-  "ember",
-  "ember-data",
+  "backbone/backbone",
   "app/modules/module",
-  "app/modules/capturer/router",
-  "app/modules/capturer/models"
-], function($, logger, Ember, DS, Module, Router, models) {
-  'use strict';
+  "app/modules/capturer/views/app_view",
+  "app/modules/capturer/router"
+], function($, logger, Backbone, Module, AppView, Router) {
+  "use strict";
   
   function Capturer(rootSelector) {
     Module.call(this, "capturer");
     
-    this.rootSelector = rootSelector
-    
-    this.initializeApp();
+    this.rootSelector = rootSelector;
     
     this.version = "1.0.0";
+    
+    this.initializeApp();
   
   };
 
@@ -25,30 +24,21 @@ define([
   Capturer.prototype.initializeApp = function() {
     var self = this;
     
-    self.app = Ember.Application.create({
-      VERSION: self.version,
-      rootElement: self.rootSelector,
-      ready: function() {
-        this.set("Router.enableLogging", true);
-      }
+    self.router = new Router();
+    
+    Backbone.history.start();
+    
+    self.appView = new AppView({
+      el: $(self.rootSelector)
     });
- 
-    // The adapter is a FixtureAdapter, because we don't need to communicate with the server.
-    self.app.ApplicationAdapter = DS.FixtureAdapter.extend();
- 
-    // Initialize the routing.
-    var router = new Router(self.app, self.rootSelector);
     
-    _.each(models, function(model, modelName) {
-      self.app[modelName] = model;
-    })
+    self.appView.render();
     
-    logger.info("Capturer app (version=" + this.version + ") has been initialized");
+    logger.info("Capturer app (version=" + self.version + ") has been initialized");
   }
   
   Capturer.prototype.refresh = function() {
     logger.info("Refreshing the capturer");
-    // TODO: Implement
   };
   
   
