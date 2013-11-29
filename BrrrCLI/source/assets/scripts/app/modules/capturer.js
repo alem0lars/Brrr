@@ -1,21 +1,25 @@
+window.name = "NG_DEFER_BOOTSTRAP!";
+  
 define([
   "jquery",
   "logger",
-  "backbone/backbone",
+  "angular/angular",
   "app/modules/module",
-  "app/modules/capturer/views/app_view",
-  "app/modules/capturer/router"
-], function($, logger, Backbone, Module, AppView, Router) {
+  "app/modules/capturer/app",
+  "app/modules/capturer/routes"
+], function($, logger, angular, Module, app) {
   "use strict";
   
+  
   function Capturer(rootSelector) {
-    Module.call(this, "capturer");
+    var self = this;
+    Module.call(self, "capturer");
     
-    this.rootSelector = rootSelector;
+    self.rootSelector = rootSelector;
     
-    this.version = "1.0.0";
+    self.version = "1.0.0";
     
-    this.initializeApp();
+    self.initializeApp();
   
   };
 
@@ -24,15 +28,13 @@ define([
   Capturer.prototype.initializeApp = function() {
     var self = this;
     
-    self.router = new Router();
+    var $rootSelector = angular.element($(self.rootSelector)[0]);
     
-    Backbone.history.start();
+    self.app = app;
     
-    self.appView = new AppView({
-      el: $(self.rootSelector)
+    angular.element().ready(function() {
+      angular.resumeBootstrap([self.app["name"]]);
     });
-    
-    self.appView.render();
     
     logger.info("Capturer app (version=" + self.version + ") has been initialized");
   }

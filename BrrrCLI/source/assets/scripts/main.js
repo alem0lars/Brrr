@@ -20,8 +20,9 @@ require.config({
     
     "lodash": { exports: ["_"] },
     
-    "backbone/backbone": { deps: ["lodash", "jquery"], exports: "Backbone" },
-    "backbone/backbone-relational": { deps: ["backbone/backbone"] },
+    "angular/angular": { exports: "angular" },
+    "angular/angular-route": { deps: ["angular/angular"] },
+    "angular/angular-mocks": { deps: ["angular/angular"], exports: "angular.mock" },
     
     "foundation/foundation-alerts": { deps: ["foundation/foundation"] },
     "foundation/foundation-clearing": { deps: ["foundation/foundation"] },
@@ -37,7 +38,11 @@ require.config({
     "foundation/foundation-tooltips": { deps: ["foundation/foundation"] },
     "foundation/foundation-topbar": { deps: ["foundation/foundation"] },
     "foundation/foundation-interchange": { deps: ["foundation/foundation"] }
-  }
+  },
+  
+  priority: [
+    "angular"
+  ]
   
 });
 
