@@ -1,21 +1,25 @@
+window.name = "NG_DEFER_BOOTSTRAP!";
+  
 define([
   "jquery",
-  "ember",
-  "ember-data",
+  "logger",
+  "angular/angular",
   "app/modules/module",
-  "app/modules/capturer/router",
-  "app/modules/capturer/models" 
-], function($, Ember, DS, Module, Router, models) {
-  'use strict';
+  "app/modules/capturer/app",
+  "app/modules/capturer/routes"
+], function($, logger, angular, Module, app) {
+  "use strict";
+  
   
   function Capturer(rootSelector) {
-    Module.call(this, "capturer");
+    var self = this;
+    Module.call(self, "capturer");
     
-    this.rootSelector = rootSelector
+    self.rootSelector = rootSelector;
     
-    this.initializeApp();
+    self.version = "1.0.0";
     
-    this.version = "1.0.0";
+    self.initializeApp();
   
   };
 
@@ -24,30 +28,19 @@ define([
   Capturer.prototype.initializeApp = function() {
     var self = this;
     
-    self.app = Ember.Application.create({
-      VERSION: self.version,
-      rootElement: self.rootSelector,
-      ready: function() {
-        this.set("Router.enableLogging", true);
-      }
+    var $rootSelector = angular.element($(self.rootSelector)[0]);
+    
+    self.app = app;
+    
+    angular.element().ready(function() {
+      angular.resumeBootstrap([self.app["name"]]);
     });
- 
-    // The adapter is a FixtureAdapter, because we don't need to communicate with the server.
-    self.app.ApplicationAdapter = DS.FixtureAdapter.extend();
- 
-    // Initialize the routing.
-    var router = new Router(self.app);
     
-    _.each(models, function(model, modelName) {
-      self.app[modelName] = model;
-    })
-    
-    console.log(">>> Capturer app (version=" + this.version + ") has been initialized");
+    logger.info("Capturer app (version=" + self.version + ") has been initialized");
   }
   
   Capturer.prototype.refresh = function() {
-    console.log(">>> Refreshing the capturer");
-    // TODO
+    logger.info("Refreshing the capturer");
   };
   
   

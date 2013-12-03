@@ -1,0 +1,33 @@
+components:
+  - id: brol
+    statuses:
+      - stopped
+      - starting  # TODO: Remove starting
+      - started
+    dependencies: []
+  - id: reader
+    statuses:
+      - stopped
+      - started
+    dependencies:
+      - component: brol
+        status: started
+  - id: bufferer
+    statuses:
+      - stopped
+      - started
+    dependencies:
+      - component: reader
+        status: started
+  - id: pusher
+    statuses:
+      - stopped
+      - started
+    dependencies:
+      - component: bufferer
+        status: started
+
+statuses:
+  - id: starting
+  - id: started
+  - id: stopped

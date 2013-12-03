@@ -1,7 +1,7 @@
 require([
   "main"
 ], function () {
-  'use strict';
+  "use strict";
 
   require([
     "jquery",

@@ -1,8 +1,9 @@
 define([
   "jquery",
-  "lodash"
-], function($, _) {
-  'use strict';
+  "lodash",
+  "logger"
+], function($, _, logger) {
+  "use strict";
   
   function Module(name) {
   
@@ -16,7 +17,7 @@ define([
   };
   
   Module.prototype.refresh = function() {
-    console.log(">>> Context " + this.name + " has been (generically) refreshed.");
+    logger.info(">>> Module " + this.name + " has been (generically) refreshed.");
   }
   
   

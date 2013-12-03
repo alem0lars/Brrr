@@ -15,13 +15,14 @@ require.config({
     "foundation/foundation": { deps: ["jquery"] },
     
     "store": { deps: ["jquery"] },
-    
-    "handlebars": { deps: [] },
-    
-    "ember": { deps: ["handlebars"], exports: 'Ember' },
-    "ember-data": { deps: ["ember"], exports: 'DS' },
+
+    "logger": { },
     
     "lodash": { exports: ["_"] },
+    
+    "angular/angular": { exports: "angular" },
+    "angular/angular-route": { deps: ["angular/angular"] },
+    "angular/angular-mocks": { deps: ["angular/angular"], exports: "angular.mock" },
     
     "foundation/foundation-alerts": { deps: ["foundation/foundation"] },
     "foundation/foundation-clearing": { deps: ["foundation/foundation"] },
@@ -37,17 +38,25 @@ require.config({
     "foundation/foundation-tooltips": { deps: ["foundation/foundation"] },
     "foundation/foundation-topbar": { deps: ["foundation/foundation"] },
     "foundation/foundation-interchange": { deps: ["foundation/foundation"] }
-  }
+  },
+  
+  priority: [
+    "angular"
+  ]
   
 });
 
 
 require([
+  "logger",
+  "text",
   "modernizr",
-  "app/misc/foundation",
-], function() {
-  'use strict';
+  "app/misc/foundation"
+], function(logger) {
+  "use strict";
   
-	console.log(">>> App Started !");
+  logger.useDefaults();
+  
+  logger.info("BrrrCLI Started");
 
 });
