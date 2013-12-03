@@ -12,19 +12,12 @@ components:
     dependencies:
       - component: brol
         status: started
-  - id: bufferer
-    statuses:
-      - stopped
-      - started
-    dependencies:
-      - component: reader
-        status: started
   - id: pusher
     statuses:
       - stopped
       - started
     dependencies:
-      - component: bufferer
+      - component: reader
         status: started
 
 statuses:
