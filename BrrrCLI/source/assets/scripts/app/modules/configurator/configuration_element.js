@@ -26,6 +26,10 @@ define([
     store.remove(this.storageId);
     this.load();
   };
+
+  ConfigurationElement.prototype.getCurrentValue = function() {
+    return store.get(this.storageId);
+  };
   
   
   return ConfigurationElement;

@@ -10,7 +10,7 @@ define([
     Module.call(self, "configurator");
     
     self.configElems = configElems || [];
-    
+
     self.loadConfigs();
     
     self.bindConfigElems();
@@ -67,7 +67,16 @@ define([
   Configurator.prototype.refresh = function() {
     this.loadConfigs();
   };
-  
+
+  Configurator.prototype.getConfigElement = function(storageId) {
+    _.each(this.configElems, function(configElem, index) {
+      if (configElem.storageId == storageId) {
+        return configElem;
+      }
+    });
+    return null;
+  };
+
   
   return Configurator;
 

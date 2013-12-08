@@ -5,6 +5,7 @@ define([
 ], function(angular, app, view1) {
   "use strict";
   
+  var ROOT_PATH = "/";
   
   app.config(["$routeProvider", function($routeProvider) {
     
@@ -13,7 +14,7 @@ define([
       controller: "MyCtrl1"
     });
     
-    $routeProvider.otherwise({ redirectTo: "/view1" });
+    $routeProvider.otherwise({ redirectTo: ROOT_PATH });
     
   }]);
 
