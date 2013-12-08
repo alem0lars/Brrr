@@ -1,2 +1,6 @@
 /*.sublime-project
 /*.sublime-workspace
+
+# Artifacts from C extensions
+*.bundle
+*.so

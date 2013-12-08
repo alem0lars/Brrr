@@ -22,7 +22,7 @@ end
 
 %w[
 	logging
-  	bufferer
-  	pusher
-  	reader
+  commons
+  pusher
+  reader
 ].each { |mod| require "brrr/#{mod}" }

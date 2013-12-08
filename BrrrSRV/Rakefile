@@ -3,28 +3,44 @@ require "rake/extensiontask"
 require "rake/clean"
 
 
+# {
+
 ROOT_PTH = Pathname.new File.dirname(__FILE__)
 TMP_PTH = ROOT_PTH.join("tmp")
 LOG_PTH = ROOT_PTH.join("log")
 LIB_PTH = ROOT_PTH.join("lib")
-C_EXTS = %w(broccoli_reader) 
-DIRTY_FILES = 
-	Dir.glob(LOG_PTH.join("*")).map(&:to_s) +
-	Dir.glob(TMP_PTH.join("*")).map(&:to_s) +
-	C_EXTS.collect { |c_ext| LIB_PTH.join("#{c_ext}.bundle").to_s }
+C_EXTS = %w(broccoli_reader)
+
+dirty_files =
+	Dir.glob(LOG_PTH.join("**")).map(&:to_s) +
+	Dir.glob(TMP_PTH.join("**")).map(&:to_s)
+
+dirty_files + C_EXTS.collect do |ext_name|
+  pth = LIB_PTH.join("#{ext_name}.bundle")
+  if pth.exist? then pth.to_s else next end
+end
+
+# }
 
 
 # { Tasks definition
 
-CLEAN.include(DIRTY_FILES)
+C_EXTS.each { |ext_name| Rake::ExtensionTask.new(ext_name) }
 
-C_EXTS.each { |c_ext| Rake::ExtensionTask.new(c_ext) }
+# { Clean / Clobber
+CLEAN.include(dirty_files)
+CLOBBER.exclude("tmp") # TODO: TMP FIX : ExtensionTask adds 'tmp' to CLOBBER
+CLEAN.existing!
+CLOBBER.existing!
+# }
 
 namespace :build do
-	
+
 	desc "Compile C extensions. Requires broccoli, json-c, openssl"
-	task :c_exts => ["compile"]
+	task :c_exts => [:compile]
 
 end
+
+task :default => [:clobber, :compile]
 
 # }

@@ -3,6 +3,9 @@ package org.nextreamlabs.bradme;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.nextreamlabs.bradme.config.ConfigBuilder;
+import org.nextreamlabs.bradme.config.IConfiguration;
+import org.nextreamlabs.bradme.config.GlobalConfig;
 import org.nextreamlabs.bradme.controllers.AppController;
 import org.nextreamlabs.bradme.controllers.IController;
 import org.nextreamlabs.bradme.support.L10N;
@@ -42,6 +45,8 @@ public class Main extends Application {
   }
 
   public static void main(String[] args) {
+    IConfiguration config = ConfigBuilder.create().parse_args(args);
+    GlobalConfig.set(config);
     launch(args);
   }
 

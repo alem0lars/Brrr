@@ -15,20 +15,20 @@ module Brrr::Pusher
 
     def parse_config(argv)
       @src_addr = argv[0] || "127.0.0.1"
-      @src_port = argv[1].to_i || 7999
+      @src_port = (argv[1] || 7999).to_i
       @ws_list_addr = argv[2] || "0.0.0.0"
-      @ws_list_port = argv[3].to_i || 8000 
+      @ws_list_port = (argv[3] || 8000).to_i
     end
 
     private :parse_config
 
     def run
       logger.info("Started pushing")
-      
+
       pusher = Pusher.new(@src_addr, @src_port, @ws_list_addr, @ws_list_port)
       pusher.serve
-      
-      logger.info("Finished pushing with status: #{result}")
+
+      logger.info("Finished pushing")
     end
 
   end

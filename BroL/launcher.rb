@@ -36,7 +36,7 @@ class Launcher
     file = File.open($paths.root.join("global_config.yml"), "r")
     global_configs = YAML::load(file.read)
     file.close
-    
+
     if global_configs
 
       if global_configs.has_key?("local_nets")
@@ -74,12 +74,12 @@ class Launcher
 
     end
 
-    @selected_configs << global_bro_path if global_bro_path.exist? 
+    @selected_configs << global_bro_path if global_bro_path.exist?
 
   end
 
   def init_presets(args)
-    
+
     file = File.open($paths.root.join("presets.yml"), "r")
     presets = YAML::load(file.read)
     file.close
@@ -102,14 +102,14 @@ class Launcher
       else # Fix
         current_preset_elems = current_preset_elems[1].flatten.uniq
       end
-      
+
       @selected_configs += current_preset_elems.collect do |preset_elem|
 
         # If the preset configuration hasn't 'bundled', provide a default
         preset_elem["bundled"] ||= false
 
         # Compute selected config
-        preset_elem["bundled"] ? 
+        preset_elem["bundled"] ?
             preset_elem["name"] :
             "#{$paths.configs.join(preset_elem["name"])}.bro"
       end
@@ -130,10 +130,11 @@ class Launcher
     FileUtils.cd($paths.tmp) do
       puts "Launching: #{@cmd}"
 
-      Open3.popen3(@cmd) { |stdin, stdout, stderr, wait_thr|
+      Open3.popen2e(@cmd) { |stdin, stdout_stderr, wait_thr|
         pid = wait_thr.pid # pid of the started process.
+        stdin.close
 
-        while line = stderr.gets
+        while line = stdout_stderr.gets
           puts line
         end
 
