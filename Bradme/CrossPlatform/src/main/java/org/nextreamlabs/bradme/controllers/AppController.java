@@ -10,6 +10,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import org.nextreamlabs.bradme.config.IConfiguration;
+import static org.nextreamlabs.bradme.config.GlobalConfig.globalConfig;
 import org.nextreamlabs.bradme.dal.DALLoader;
 import org.nextreamlabs.bradme.dal.descriptors.ComponentDescriptor;
 import org.nextreamlabs.bradme.dal.repositories.AvailableComponentStatusesRepository;
@@ -92,7 +94,7 @@ public class AppController extends Controller implements IController {
   @FXML
   protected void loadData() {
     try {
-      DALLoader dalLoader = DALLoader.create("/Users/alem0lars/Projects/Brrr/data/components.yml");
+      DALLoader dalLoader = DALLoader.create("/usr/local/archive/projects/Brrr/data/components.yml");
       dalLoader.load();
       AvailableComponentStatusesRepository.configureRepository(dalLoader);
       AvailableComponentsRepository.configureRepository(dalLoader);
