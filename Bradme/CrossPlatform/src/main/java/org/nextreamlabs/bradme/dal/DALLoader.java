@@ -2,6 +2,7 @@ package org.nextreamlabs.bradme.dal;
 
 import org.nextreamlabs.bradme.dal.descriptors.ComponentDescriptor;
 import org.nextreamlabs.bradme.dal.descriptors.ComponentStatusDescriptor;
+import org.nextreamlabs.bradme.dal.descriptors.StatusDescriptor;
 import org.nextreamlabs.bradme.exceptions.InvalidConfigurationException;
 import org.nextreamlabs.bradme.support.Logging;
 import org.yaml.snakeyaml.Yaml;
@@ -38,8 +39,8 @@ public class DALLoader implements IDALLoader {
   // { Queries
 
   @Override
-  public Collection<ComponentStatusDescriptor> queryComponentStatusDescriptors() {
-    Collection<ComponentStatusDescriptor> componentStatusDescriptors = new LinkedList<>();
+  public Collection<StatusDescriptor> queryStatusDescriptors() {
+    Collection<StatusDescriptor> statusDescriptors = new LinkedList<>();
     String statusesKey = "statuses";
 
     this.ensureContains(this.loadedContent, statusesKey);
@@ -49,16 +50,16 @@ public class DALLoader implements IDALLoader {
       Map<String, String> statusInfo = this.typize(loadedStatus, String.format("The status %s isn't an hash", loadedStatus));
       this.ensureContains(statusInfo, "id");
       String statusId = statusInfo.get("id");
-      ComponentStatusDescriptor componentStatusDescriptor = ComponentStatusDescriptor.create(statusId);
-      componentStatusDescriptors.add(componentStatusDescriptor);
+      StatusDescriptor statusDescriptor = StatusDescriptor.create(statusId);
+      statusDescriptors.add(statusDescriptor);
     }
 
-    return componentStatusDescriptors;
+    return statusDescriptors;
   }
 
   @Override
   public Collection<ComponentDescriptor> queryComponentDescriptors() {
-    Collection<ComponentStatusDescriptor> availableComponentStatusDescriptors = queryComponentStatusDescriptors();
+    Collection<StatusDescriptor> availableStatusDescriptors = queryStatusDescriptors();
     Collection<ComponentDescriptor> componentDescriptors = new LinkedList<>();
     String componentsKey = "components";
 
@@ -71,24 +72,29 @@ public class DALLoader implements IDALLoader {
       this.ensureContains(componentInfo, "id");
       String componentId = this.typize(componentInfo.get("id"), String.format("the component id should be a string"));
 
-      Collection<ComponentStatusDescriptor> selectedComponentStatuses = new LinkedList<>();
-      List<String> componentStatusesInfo = this.typize(componentInfo.get("statuses"), String.format("statuses for component %s are invalid", componentId));
+      Collection<ComponentStatusDescriptor> selectedStatuses = new LinkedList<>();
+      List<Object> loadedStatuses = this.typize(componentInfo.get("statuses"), String.format("statuses for component %s are invalid", componentId));
 
-      for (String componentStatusId : componentStatusesInfo) {
+      // TODO: Da statusId a statusesInfo che contiene sia id che command, dopo di che in selectedStatuses metto i
+      // ComponentStatusDescriptor
+      for (Object loadedStatus : loadedStatuses) {
         Boolean found = false;
-        for (ComponentStatusDescriptor componentStatusDescriptor : availableComponentStatusDescriptors) {
-          if (componentStatusDescriptor.id.equals(componentStatusId)) {
-            selectedComponentStatuses.add(componentStatusDescriptor);
+        Map<String, Object> statusInfo = this.typize(loadedStatus, String.format("the component status informations should be a dictionary"));
+        String statusId = this.typize(statusInfo.get("id"), String.format("Invalid component status identifier"));
+        String statusCommandOnStart = this.typize(statusInfo.get("cmd"), String.format("Invalid component status command (on start)"));
+        for (StatusDescriptor statusDescriptor : availableStatusDescriptors) {
+          if (statusDescriptor.id.equals(statusId)) {
+            selectedStatuses.add(ComponentStatusDescriptor.create(statusId, statusCommandOnStart));
             found = true;
             break;
           }
         }
         if (!found) {
-          throw InvalidConfigurationException.create(String.format("status %s hasn't been declared", componentStatusId));
+          throw InvalidConfigurationException.create(String.format("status %s hasn't been declared", statusId));
         }
       }
 
-      Map<ComponentDescriptor, ComponentStatusDescriptor> dependencies = new HashMap<>();
+      Map<ComponentDescriptor, StatusDescriptor> dependencies = new HashMap<>();
       List<Object> dependenciesInfo = this.typize(componentInfo.get("dependencies"), String.format("The dependencies for component %s are invalid", componentId));
 
       for (Object dependencyInfo : dependenciesInfo) {
@@ -106,11 +112,11 @@ public class DALLoader implements IDALLoader {
           throw InvalidConfigurationException.create(String.format("The dependency refers to the component %s, which hasn't been declared yet", dependencyComponentId));
         }
 
-        ComponentStatusDescriptor dependencyStatus = null;
+        StatusDescriptor dependencyStatus = null;
         String dependencyStatusId = dependencyMap.get("status");
-        for (ComponentStatusDescriptor componentStatusDescriptor : availableComponentStatusDescriptors) {
-          if (componentStatusDescriptor.id.equals(dependencyStatusId)) {
-            dependencyStatus = componentStatusDescriptor;
+        for (StatusDescriptor statusDescriptor : availableStatusDescriptors) {
+          if (statusDescriptor.id.equals(dependencyStatusId)) {
+            dependencyStatus = statusDescriptor;
             break;
           }
         }
@@ -121,8 +127,8 @@ public class DALLoader implements IDALLoader {
         dependencies.put(dependencyComponent, dependencyStatus);
       }
 
-      ComponentDescriptor componentStatusDescriptor = ComponentDescriptor.create(componentId, selectedComponentStatuses, dependencies);
-      componentDescriptors.add(componentStatusDescriptor);
+      ComponentDescriptor componentDescriptor = ComponentDescriptor.create(componentId, selectedStatuses, dependencies);
+      componentDescriptors.add(componentDescriptor);
     }
 
     return componentDescriptors;

@@ -2,10 +2,12 @@ package org.nextreamlabs.bradme.factories.models_factories;
 
 import org.nextreamlabs.bradme.dal.descriptors.ComponentDescriptor;
 import org.nextreamlabs.bradme.dal.descriptors.ComponentStatusDescriptor;
+import org.nextreamlabs.bradme.dal.descriptors.StatusDescriptor;
 import org.nextreamlabs.bradme.dal.repositories.AvailableComponentsRepository;
 import org.nextreamlabs.bradme.models.component.Component;
 import org.nextreamlabs.bradme.models.component.IComponent;
 import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
+import org.nextreamlabs.bradme.models.status.IStatus;
 import org.nextreamlabs.bradme.support.L10N;
 import org.nextreamlabs.bradme.support.Logging;
 
@@ -18,18 +20,18 @@ public class ComponentsFactory
     extends ModelFactoryWithCache<ComponentDescriptor, IComponent>
     implements IModelFactoryWithCache<ComponentDescriptor, IComponent> {
 
-  private final ComponentStatusesFactory componentStatusesFactory;
+  private final StatusesFactory statusesFactory;
 
   // { Construction
 
-  protected ComponentsFactory(ComponentStatusesFactory componentStatusesFactory) {
+  protected ComponentsFactory(StatusesFactory statusesFactory) {
     super();
-    this.componentStatusesFactory = componentStatusesFactory;
+    this.statusesFactory = statusesFactory;
     this.initializeCache();
   }
 
-  public static ComponentsFactory create(ComponentStatusesFactory componentStatusesFactory) {
-    return new ComponentsFactory(componentStatusesFactory);
+  public static ComponentsFactory create(StatusesFactory statusesFactory) {
+    return new ComponentsFactory(statusesFactory);
   }
 
   // }
@@ -38,11 +40,15 @@ public class ComponentsFactory
 
   @Override
   protected IComponent createElement(ComponentDescriptor componentDescriptor) {
-    Map<IComponent, IComponentStatus> dependencies = this.createDependencies(componentDescriptor.dependencies);
+    ComponentStatusesFactory componentStatusesFactory = new ComponentStatusesFactory();
+
+    Map<IComponent, IStatus> dependencies = this.createDependencies(componentDescriptor.dependencies);
     Collection<IComponentStatus> statuses = new LinkedList<>();
+
     for (ComponentStatusDescriptor componentStatusDescriptor : componentDescriptor.statuses) {
-      statuses.add(this.componentStatusesFactory.getNew(componentStatusDescriptor));
+      statuses.add(componentStatusesFactory.createElement(componentStatusDescriptor));
     }
+
     return Component.create(
         L10N.t(componentDescriptor.nameKey),
         L10N.t(componentDescriptor.descKey),
@@ -63,14 +69,14 @@ public class ComponentsFactory
 
   // { Utilities
 
-  protected Map<IComponent, IComponentStatus> createDependencies(Map<ComponentDescriptor, ComponentStatusDescriptor> dependenciesDescriptor) {
-    Map<IComponent, IComponentStatus> dependencies = new HashMap<>();
+  protected Map<IComponent, IStatus> createDependencies(Map<ComponentDescriptor, StatusDescriptor> dependenciesDescriptor) {
+    Map<IComponent, IStatus> dependencies = new HashMap<>();
 
-    for (Map.Entry<ComponentDescriptor, ComponentStatusDescriptor> entry : dependenciesDescriptor.entrySet()) {
+    for (Map.Entry<ComponentDescriptor, StatusDescriptor> entry : dependenciesDescriptor.entrySet()) {
       ComponentDescriptor componentDescriptor = entry.getKey();
-      ComponentStatusDescriptor statusDescriptor = entry.getValue();
+      StatusDescriptor statusDescriptor = entry.getValue();
       IComponent component = this.get(componentDescriptor);
-      IComponentStatus componentStatus = this.componentStatusesFactory.getNew(statusDescriptor);
+      IStatus componentStatus = this.statusesFactory.getNew(statusDescriptor);
       dependencies.put(component, componentStatus);
     }
 

@@ -19,7 +19,7 @@ public class AvailableComponentsRepository
   }
 
   public static void configureRepository(IDALLoader dalLoader) {
-    AvailableComponentStatusesRepository.configureRepository(dalLoader);
+    AvailableStatusesRepository.configureRepository(dalLoader);
     instance = new AvailableComponentsRepository(dalLoader.queryComponentDescriptors());
   }
 

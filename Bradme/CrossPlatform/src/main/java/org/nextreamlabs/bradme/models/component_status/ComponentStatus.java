@@ -2,54 +2,31 @@ package org.nextreamlabs.bradme.models.component_status;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.nextreamlabs.bradme.models.status.Status;
 
-public class ComponentStatus implements IComponentStatus {
-
-  private StringProperty name;
-  private StringProperty desc;
-  private StringProperty actionName;
+public class ComponentStatus extends Status implements IComponentStatus {
+  private final StringProperty commandOnEnter;
 
   // { Construction
 
-  private ComponentStatus(StringProperty name, StringProperty desc, StringProperty actionName) {
-    this.name = name;
-    this.desc = desc;
-    this.actionName = actionName;
+  private ComponentStatus(StringProperty name, StringProperty desc, StringProperty actionName, StringProperty commandOnEnter) {
+    super(name, desc, actionName);
+    this.commandOnEnter = commandOnEnter;
   }
 
-  public static IComponentStatus create(String name, String desc, String actionName) {
-    return new ComponentStatus(new SimpleStringProperty(name), new SimpleStringProperty(desc), new SimpleStringProperty(actionName));
+  public static IComponentStatus create(String name, String desc, String actionName, String commandOnEnter) {
+    return new ComponentStatus(new SimpleStringProperty(name), new SimpleStringProperty(desc), new SimpleStringProperty(actionName), new SimpleStringProperty(commandOnEnter));
   }
 
   // }
 
   // { IComponentStatus implementation
 
-  public StringProperty name() {
-    return this.name;
+  @Override
+  public StringProperty getCommandOnEnter() {
+    return this.commandOnEnter;
   }
 
-  public StringProperty desc() {
-    return this.desc;
-  }
-
-  public StringProperty actionName() {
-    return this.actionName;
-  }
-
-  public String getPrettyName() {
-    return this.name().get();
-  }
-
-  // }
-
-  /**
-   * Two component statuses are equals if they have:
-   * - The same name
-   *
-   * @param o The other object to be compared to.
-   * @return true if o is equal to this, otherwise false.
-   */
   @Override
   public boolean equals(Object o) {
     //noinspection InstanceofInterfaces
@@ -58,6 +35,9 @@ public class ComponentStatus implements IComponentStatus {
     }
     IComponentStatus otherComponentStatus = (IComponentStatus) o;
 
-    return otherComponentStatus.name().getValue().equals(this.name().getValue());
+    return super.equals(o)
+        && this.getCommandOnEnter().equals(((IComponentStatus) o).getCommandOnEnter());
   }
+
+  // }
 }

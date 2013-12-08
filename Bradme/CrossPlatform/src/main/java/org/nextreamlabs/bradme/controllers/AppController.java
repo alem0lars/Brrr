@@ -10,14 +10,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import org.nextreamlabs.bradme.config.IConfiguration;
-import static org.nextreamlabs.bradme.config.GlobalConfig.globalConfig;
 import org.nextreamlabs.bradme.dal.DALLoader;
 import org.nextreamlabs.bradme.dal.descriptors.ComponentDescriptor;
-import org.nextreamlabs.bradme.dal.repositories.AvailableComponentStatusesRepository;
+import org.nextreamlabs.bradme.dal.repositories.AvailableStatusesRepository;
 import org.nextreamlabs.bradme.dal.repositories.AvailableComponentsRepository;
 import org.nextreamlabs.bradme.exceptions.CannotCreateViewException;
-import org.nextreamlabs.bradme.factories.models_factories.ComponentStatusesFactory;
+import org.nextreamlabs.bradme.factories.models_factories.StatusesFactory;
 import org.nextreamlabs.bradme.factories.models_factories.ComponentsFactory;
 import org.nextreamlabs.bradme.models.component.IComponent;
 import org.nextreamlabs.bradme.support.L10N;
@@ -34,7 +32,7 @@ import java.util.LinkedList;
 public class AppController extends Controller implements IController {
 
   private ComponentsFactory componentsFactory;
-  private ComponentStatusesFactory componentStatusesFactory;
+  private StatusesFactory statusesFactory;
 
   // { Controls
 
@@ -94,15 +92,18 @@ public class AppController extends Controller implements IController {
   @FXML
   protected void loadData() {
     try {
-      DALLoader dalLoader = DALLoader.create("/usr/local/archive/projects/Brrr/data/components.yml");
+      //String path = "/usr/local/archive/projects/Brrr/data/components.yml";
+      String path = "/Users/alem0lars/projects/Brrr/data/components.yml";
+      DALLoader dalLoader = DALLoader.create(path);
       dalLoader.load();
-      AvailableComponentStatusesRepository.configureRepository(dalLoader);
+      AvailableStatusesRepository.configureRepository(dalLoader);
       AvailableComponentsRepository.configureRepository(dalLoader);
-      this.componentStatusesFactory = ComponentStatusesFactory.create();
-      this.componentsFactory = ComponentsFactory.create(this.componentStatusesFactory);
+      this.statusesFactory = StatusesFactory.create();
+      this.componentsFactory = ComponentsFactory.create(this.statusesFactory);
       this.isConfigured.setValue(true);
     } catch (FileNotFoundException e) {
       this.isConfigured.setValue(false);
+      Logging.error(e.getMessage());
     }
   }
 

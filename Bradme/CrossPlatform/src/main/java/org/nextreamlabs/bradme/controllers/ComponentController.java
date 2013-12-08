@@ -9,7 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import org.nextreamlabs.bradme.models.component.IComponent;
-import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
+import org.nextreamlabs.bradme.models.status.IStatus;
 import org.nextreamlabs.bradme.support.Logging;
 
 public class ComponentController extends Controller implements IController {
@@ -71,9 +71,9 @@ public class ComponentController extends Controller implements IController {
   }
 
   private void bindComponentActionControl() {
-    this.component.getValue().nextStatus().addListener(new ChangeListener<IComponentStatus>() {
+    this.component.getValue().nextStatus().addListener(new ChangeListener<IStatus>() {
       @Override
-      public void changed(ObservableValue<? extends IComponentStatus> observableValue, IComponentStatus iComponentStatus, IComponentStatus iComponentStatus2) {
+      public void changed(ObservableValue<? extends IStatus> observableValue, IStatus iStatus, IStatus iStatus2) {
         componentActionControl.textProperty().unbind();
         componentActionControl.textProperty().bind(component.getValue().nextStatus().getValue().actionName());
       }
@@ -92,9 +92,9 @@ public class ComponentController extends Controller implements IController {
   }
 
   private void bindComponentStatusControl() {
-    this.component.getValue().currentStatus().addListener(new ChangeListener<IComponentStatus>() {
+    this.component.getValue().currentStatus().addListener(new ChangeListener<IStatus>() {
       @Override
-      public void changed(ObservableValue<? extends IComponentStatus> v, IComponentStatus oldStatus, IComponentStatus newStatus) {
+      public void changed(ObservableValue<? extends IStatus> v, IStatus oldStatus, IStatus newStatus) {
         componentStatusControl.textProperty().unbind();
         componentStatusControl.textProperty().bind(component.getValue().currentStatus().getValue().name());
       }

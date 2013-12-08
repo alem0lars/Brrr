@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
+import org.nextreamlabs.bradme.models.status.IStatus;
 
 import java.util.Collection;
 import java.util.Map;
@@ -18,7 +19,7 @@ public class Component implements IComponent {
   private ObjectProperty<IComponentStatus> currentStatus;
   private ObjectProperty<IComponentStatus> nextStatus;
   private ListProperty<ObjectProperty<IComponentStatus>> statuses;
-  private MapProperty<ObjectProperty<IComponent>, ObjectProperty<IComponentStatus>> dependencies;
+  private MapProperty<ObjectProperty<IComponent>, ObjectProperty<IStatus>> dependencies;
   private BooleanProperty areDependenciesSatisfied;
 
   // { Construction
@@ -26,7 +27,7 @@ public class Component implements IComponent {
   protected Component(
       String name, String desc,
       Collection<IComponentStatus> statuses,
-      Map<IComponent, IComponentStatus> dependencies) {
+      Map<IComponent, IStatus> dependencies) {
     if (statuses.size() == 0) {
       throw new IllegalArgumentException("statuses cannot be empty");
     }
@@ -44,8 +45,8 @@ public class Component implements IComponent {
     this.currentStatus = new SimpleObjectProperty<>(this.statuses.get(0).getValue());
     this.nextStatus = new SimpleObjectProperty<>(this.findNextStatus(this.currentStatus().getValue()));
 
-    ObservableMap<ObjectProperty<IComponent>, ObjectProperty<IComponentStatus>> tmpDependencies = FXCollections.observableHashMap();
-    for (Map.Entry<IComponent, IComponentStatus> entry : dependencies.entrySet()) {
+    ObservableMap<ObjectProperty<IComponent>, ObjectProperty<IStatus>> tmpDependencies = FXCollections.observableHashMap();
+    for (Map.Entry<IComponent, IStatus> entry : dependencies.entrySet()) {
       tmpDependencies.put(new SimpleObjectProperty<>(entry.getKey()), new SimpleObjectProperty<>(entry.getValue()));
     }
     this.dependencies = new SimpleMapProperty<>(tmpDependencies);
@@ -57,7 +58,7 @@ public class Component implements IComponent {
   public static IComponent create(
       String name, String desc,
       Collection<IComponentStatus> statuses,
-      Map<IComponent, IComponentStatus> dependencies) {
+      Map<IComponent, IStatus> dependencies) {
     return new Component(name, desc, statuses, dependencies);
   }
 
@@ -81,7 +82,7 @@ public class Component implements IComponent {
     return this.statuses;
   }
 
-  public MapProperty<ObjectProperty<IComponent>, ObjectProperty<IComponentStatus>> dependencies() {
+  public MapProperty<ObjectProperty<IComponent>, ObjectProperty<IStatus>> dependencies() {
     return this.dependencies;
   }
 
@@ -129,16 +130,16 @@ public class Component implements IComponent {
 
   protected void initializeAreDependenciesSatisfied() {
     this.areDependenciesSatisfied = new SimpleBooleanProperty(this.calculateAreDependenciesSatisfied());
-    this.dependencies().addListener(new ChangeListener<ObservableMap<ObjectProperty<IComponent>, ObjectProperty<IComponentStatus>>>() {
+    this.dependencies().addListener(new ChangeListener<ObservableMap<ObjectProperty<IComponent>, ObjectProperty<IStatus>>>() {
       @Override
       public void changed(
-          ObservableValue<? extends ObservableMap<ObjectProperty<IComponent>, ObjectProperty<IComponentStatus>>> deps,
-          ObservableMap<ObjectProperty<IComponent>, ObjectProperty<IComponentStatus>> oldValue,
-          ObservableMap<ObjectProperty<IComponent>, ObjectProperty<IComponentStatus>> newValue) {
+          ObservableValue<? extends ObservableMap<ObjectProperty<IComponent>, ObjectProperty<IStatus>>> deps,
+          ObservableMap<ObjectProperty<IComponent>, ObjectProperty<IStatus>> oldValue,
+          ObservableMap<ObjectProperty<IComponent>, ObjectProperty<IStatus>> newValue) {
         computeAreDependenciesSatisfied();
       }
     });
-    for (Map.Entry<ObjectProperty<IComponent>, ObjectProperty<IComponentStatus>> entry : this.dependencies().entrySet()) {
+    for (Map.Entry<ObjectProperty<IComponent>, ObjectProperty<IStatus>> entry : this.dependencies().entrySet()) {
       ObjectProperty<IComponent> dependency = entry.getKey();
       dependency.addListener(new ChangeListener<IComponent>() {
         @Override
@@ -146,9 +147,9 @@ public class Component implements IComponent {
           computeAreDependenciesSatisfied();
         }
       });
-      dependency.getValue().currentStatus().addListener(new ChangeListener<IComponentStatus>() {
+      dependency.getValue().currentStatus().addListener(new ChangeListener<IStatus>() {
         @Override
-        public void changed(ObservableValue<? extends IComponentStatus> observableValue, IComponentStatus iComponentStatus, IComponentStatus iComponentStatus2) {
+        public void changed(ObservableValue<? extends IStatus> observableValue, IStatus iStatus, IStatus iStatus2) {
           computeAreDependenciesSatisfied();
         }
       });
@@ -156,10 +157,11 @@ public class Component implements IComponent {
   }
 
   protected Boolean calculateAreDependenciesSatisfied() {
-    for (Map.Entry<ObjectProperty<IComponent>, ObjectProperty<IComponentStatus>> entry : this.dependencies().entrySet()) {
+    for (Map.Entry<ObjectProperty<IComponent>, ObjectProperty<IStatus>> entry : this.dependencies().entrySet()) {
       ObjectProperty<IComponent> dependency = entry.getKey();
-      ObjectProperty<IComponentStatus> dependencyRequiredStatus = entry.getValue();
+      ObjectProperty<IStatus> dependencyRequiredStatus = entry.getValue();
       if (!dependency.getValue().areDependenciesSatisfied().getValue() ||
+          // TODO: Fix next row comparison (it should be done between two IStatus (not a IComponentStatus and a IStatus))
           !dependency.getValue().currentStatus().getValue().equals(dependencyRequiredStatus.getValue())) {
         return false;
       }
@@ -187,7 +189,7 @@ public class Component implements IComponent {
     this.nextStatus().setValue(this.findNextStatus(this.nextStatus().getValue()));
   }
 
-  protected IComponentStatus findNextStatus(IComponentStatus status) {
+  protected IComponentStatus findNextStatus(IStatus status) {
     int nextStatusIndex = 0;
     for (int i = 0; i < this.statuses().size() - 1; i++) {
       if (this.statuses().get(i).getValue().equals(status)) {

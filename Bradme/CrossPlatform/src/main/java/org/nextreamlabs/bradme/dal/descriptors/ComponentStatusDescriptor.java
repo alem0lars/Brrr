@@ -1,43 +1,33 @@
 package org.nextreamlabs.bradme.dal.descriptors;
 
-import org.nextreamlabs.bradme.support.L10N;
+public class ComponentStatusDescriptor extends StatusDescriptor {
 
-public class ComponentStatusDescriptor {
-
-  public String id;
-  public String actionNameKey;
-  public String nameKey;
-  public String descKey;
+  public String commandOnEnter;
 
   // { Construction
 
-  private ComponentStatusDescriptor(String id) {
-    this.id = id;
-    this.nameKey = String.format("%s_name", id);
-    this.descKey = String.format("%s_desc", id);
-    this.actionNameKey = String.format("%s_action_name", id);
+  protected ComponentStatusDescriptor(String id, String commandOnEnter) {
+    super(id);
+    this.commandOnEnter = commandOnEnter;
   }
 
-  public static ComponentStatusDescriptor create(String id) {
-    return new ComponentStatusDescriptor(id);
+  public static ComponentStatusDescriptor create(String id, String commandOnEnter) {
+    return new ComponentStatusDescriptor(id, commandOnEnter);
   }
 
   // }
 
   @Override
-  public String toString() {
-    return L10N.t(this.nameKey);
-  }
-
-  @Override
   public boolean equals(Object o) {
+    //noinspection InstanceofInterfaces
     if (!(o instanceof ComponentStatusDescriptor)) {
       return false;
     }
 
     ComponentStatusDescriptor otherComponentStatusDescriptor = (ComponentStatusDescriptor) o;
 
-    return this.id.equals(otherComponentStatusDescriptor.id);
+    return super.equals(o)
+        && this.commandOnEnter.equals(otherComponentStatusDescriptor.commandOnEnter);
   }
 
   private volatile int hashCode;
@@ -47,6 +37,7 @@ public class ComponentStatusDescriptor {
     if (result == 0) {
       result = 17;
       result = 31 * result + this.id.hashCode();
+      result = 31 * result + this.commandOnEnter.hashCode();
       hashCode = result;
     }
     return result;

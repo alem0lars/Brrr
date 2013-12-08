@@ -13,11 +13,11 @@ public class ComponentDescriptor {
   public String nameKey;
   public String descKey;
   public Collection<ComponentStatusDescriptor> statuses;
-  public Map<ComponentDescriptor, ComponentStatusDescriptor> dependencies;
+  public Map<ComponentDescriptor, StatusDescriptor> dependencies;
 
   // { Construction
 
-  protected ComponentDescriptor(String id, Collection<ComponentStatusDescriptor> statuses, Map<ComponentDescriptor, ComponentStatusDescriptor> dependencies) {
+  protected ComponentDescriptor(String id, Collection<ComponentStatusDescriptor> statuses, Map<ComponentDescriptor, StatusDescriptor> dependencies) {
     this.id = id;
     this.nameKey = String.format("%s_name", id);
     this.descKey = String.format("%s_desc", id);
@@ -25,7 +25,7 @@ public class ComponentDescriptor {
     this.dependencies = new HashMap<>(dependencies);
   }
 
-  public static ComponentDescriptor create(String id, Collection<ComponentStatusDescriptor> statuses, Map<ComponentDescriptor, ComponentStatusDescriptor> dependencies) {
+  public static ComponentDescriptor create(String id, Collection<ComponentStatusDescriptor> statuses, Map<ComponentDescriptor, StatusDescriptor> dependencies) {
     return new ComponentDescriptor(id, statuses, dependencies);
   }
 
