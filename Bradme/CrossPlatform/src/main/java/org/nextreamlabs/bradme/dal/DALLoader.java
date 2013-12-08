@@ -75,8 +75,6 @@ public class DALLoader implements IDALLoader {
       Collection<ComponentStatusDescriptor> selectedStatuses = new LinkedList<>();
       List<Object> loadedStatuses = this.typize(componentInfo.get("statuses"), String.format("statuses for component %s are invalid", componentId));
 
-      // TODO: Da statusId a statusesInfo che contiene sia id che command, dopo di che in selectedStatuses metto i
-      // ComponentStatusDescriptor
       for (Object loadedStatus : loadedStatuses) {
         Boolean found = false;
         Map<String, Object> statusInfo = this.typize(loadedStatus, String.format("the component status informations should be a dictionary"));

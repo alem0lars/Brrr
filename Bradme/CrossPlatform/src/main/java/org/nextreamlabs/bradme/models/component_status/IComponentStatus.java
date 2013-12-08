@@ -5,4 +5,5 @@ import org.nextreamlabs.bradme.models.status.IStatus;
 
 public interface IComponentStatus extends IStatus {
   public StringProperty getCommandOnEnter();
+  public boolean equalsToStatus(IStatus status);
 }

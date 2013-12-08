@@ -2,6 +2,7 @@ package org.nextreamlabs.bradme.models.component_status;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.nextreamlabs.bradme.models.status.IStatus;
 import org.nextreamlabs.bradme.models.status.Status;
 
 public class ComponentStatus extends Status implements IComponentStatus {
@@ -36,7 +37,12 @@ public class ComponentStatus extends Status implements IComponentStatus {
     IComponentStatus otherComponentStatus = (IComponentStatus) o;
 
     return super.equals(o)
-        && this.getCommandOnEnter().equals(((IComponentStatus) o).getCommandOnEnter());
+        && this.getCommandOnEnter().equals(otherComponentStatus.getCommandOnEnter());
+  }
+
+  @Override
+  public boolean equalsToStatus(IStatus status) {
+    return Status.create(this.name().get(), this.desc().get(), this.actionName().get()).equals(status);
   }
 
   // }

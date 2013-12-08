@@ -162,7 +162,7 @@ public class Component implements IComponent {
       ObjectProperty<IStatus> dependencyRequiredStatus = entry.getValue();
       if (!dependency.getValue().areDependenciesSatisfied().getValue() ||
           // TODO: Fix next row comparison (it should be done between two IStatus (not a IComponentStatus and a IStatus))
-          !dependency.getValue().currentStatus().getValue().equals(dependencyRequiredStatus.getValue())) {
+          !dependency.getValue().currentStatus().getValue().equalsToStatus(dependencyRequiredStatus.getValue())) {
         return false;
       }
     }
