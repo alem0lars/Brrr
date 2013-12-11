@@ -15,6 +15,7 @@ import org.nextreamlabs.bradme.dal.descriptors.ComponentDescriptor;
 import org.nextreamlabs.bradme.dal.repositories.AvailableStatusesRepository;
 import org.nextreamlabs.bradme.dal.repositories.AvailableComponentsRepository;
 import org.nextreamlabs.bradme.exceptions.CannotCreateViewException;
+import org.nextreamlabs.bradme.exceptions.InvalidConfigurationException;
 import org.nextreamlabs.bradme.factories.models_factories.StatusesFactory;
 import org.nextreamlabs.bradme.factories.models_factories.ComponentsFactory;
 import org.nextreamlabs.bradme.models.component.IComponent;
@@ -92,8 +93,9 @@ public class AppController extends Controller implements IController {
   @FXML
   protected void loadData() {
     try {
-      //String path = "/usr/local/archive/projects/Brrr/data/components.yml";
-      String path = "/Users/alem0lars/projects/Brrr/data/components.yml";
+      this.isConfigured.setValue(false);
+      String path = "/usr/local/archive/projects/Brrr/data/components.yml";
+      //String path = "/Users/alem0lars/projects/Brrr/data/components.yml";
       DALLoader dalLoader = DALLoader.create(path);
       dalLoader.load();
       AvailableStatusesRepository.configureRepository(dalLoader);
@@ -102,7 +104,8 @@ public class AppController extends Controller implements IController {
       this.componentsFactory = ComponentsFactory.create(this.statusesFactory);
       this.isConfigured.setValue(true);
     } catch (FileNotFoundException e) {
-      this.isConfigured.setValue(false);
+      Logging.error(e.getMessage());
+    } catch (InvalidConfigurationException e) {
       Logging.error(e.getMessage());
     }
   }

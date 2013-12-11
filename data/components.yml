@@ -1,24 +1,35 @@
 components:
+
   - id: brol
     statuses:
-      - stopped
-      - starting  # TODO: Remove starting
-      - started
+      - id: stopped
+        cmd: ""
+      - id: starting  # TODO: Remove starting
+        cmd: ""
+      - id: started
+        cmd: ""
     dependencies: []
+
   - id: reader
     statuses:
-      - stopped
-      - started
+      - id: stopped
+        cmd: ""
+      - id: started
+        cmd: ""
     dependencies:
       - component: brol
         status: started
+
   - id: pusher
     statuses:
-      - stopped
-      - started
+      - id: stopped
+        cmd: ""
+      - id: started
+        cmd: ""
     dependencies:
       - component: reader
         status: started
+
 
 statuses:
   - id: starting

@@ -44,10 +44,10 @@ public class DALLoader implements IDALLoader {
     String statusesKey = "statuses";
 
     this.ensureContains(this.loadedContent, statusesKey);
-    List loadedStatuses = this.typize(loadedContent.get(statusesKey), String.format("%s isn't a list", statusesKey));
+    List loadedStatuses = this.ensureClass(List.class, loadedContent.get(statusesKey), String.format("%s isn't a list", statusesKey));
 
     for (Object loadedStatus : loadedStatuses) {
-      Map<String, String> statusInfo = this.typize(loadedStatus, String.format("The status %s isn't an hash", loadedStatus));
+      Map<String, String> statusInfo = this.ensureClass(Map.class, loadedStatus, String.format("The status %s isn't an hash", loadedStatus));
       this.ensureContains(statusInfo, "id");
       String statusId = statusInfo.get("id");
       StatusDescriptor statusDescriptor = StatusDescriptor.create(statusId);
@@ -64,22 +64,22 @@ public class DALLoader implements IDALLoader {
     String componentsKey = "components";
 
     this.ensureContains(this.loadedContent, componentsKey);
-    List loadedComponents = typize(loadedContent.get(componentsKey), String.format("%s doesn't contain a list", componentsKey));
+    List loadedComponents = ensureClass(List.class, loadedContent.get(componentsKey), String.format("%s doesn't contain a list", componentsKey));
 
     for (Object loadedComponent : loadedComponents) {
-      Map<String, Object> componentInfo = this.typize(loadedComponent, String.format("Invalid component info"));
+      Map<String, Object> componentInfo = this.ensureClass(Map.class, loadedComponent, String.format("Invalid component info"));
 
       this.ensureContains(componentInfo, "id");
-      String componentId = this.typize(componentInfo.get("id"), String.format("the component id should be a string"));
+      String componentId = this.ensureClass(String.class, componentInfo.get("id"), String.format("the component id should be a string"));
 
       Collection<ComponentStatusDescriptor> selectedStatuses = new LinkedList<>();
-      List<Object> loadedStatuses = this.typize(componentInfo.get("statuses"), String.format("statuses for component %s are invalid", componentId));
+      List<Object> loadedStatuses = this.ensureClass(List.class, componentInfo.get("statuses"), String.format("statuses for component %s are invalid", componentId));
 
       for (Object loadedStatus : loadedStatuses) {
         Boolean found = false;
-        Map<String, Object> statusInfo = this.typize(loadedStatus, String.format("the component status informations should be a dictionary"));
-        String statusId = this.typize(statusInfo.get("id"), String.format("Invalid component status identifier"));
-        String statusCommandOnStart = this.typize(statusInfo.get("cmd"), String.format("Invalid component status command (on start)"));
+        Map<String, Object> statusInfo = this.ensureClass(Map.class, loadedStatus, String.format("the component status informations should be a dictionary"));
+        String statusId = this.ensureClass(String.class, statusInfo.get("id"), String.format("Invalid component status identifier"));
+        String statusCommandOnStart = this.ensureClass(String.class, statusInfo.get("cmd"), String.format("Invalid component status command (on start)"));
         for (StatusDescriptor statusDescriptor : availableStatusDescriptors) {
           if (statusDescriptor.id.equals(statusId)) {
             selectedStatuses.add(ComponentStatusDescriptor.create(statusId, statusCommandOnStart));
@@ -93,10 +93,10 @@ public class DALLoader implements IDALLoader {
       }
 
       Map<ComponentDescriptor, StatusDescriptor> dependencies = new HashMap<>();
-      List<Object> dependenciesInfo = this.typize(componentInfo.get("dependencies"), String.format("The dependencies for component %s are invalid", componentId));
+      List<Object> dependenciesInfo = this.ensureClass(List.class, componentInfo.get("dependencies"), String.format("The dependencies for component %s are invalid", componentId));
 
       for (Object dependencyInfo : dependenciesInfo) {
-        Map<String, String> dependencyMap = this.typize((Map<String, String>) dependencyInfo, "A dependency should be an hash");
+        Map<String, String> dependencyMap = this.ensureClass(Map.class, dependencyInfo, "A dependency should be an hash");
 
         ComponentDescriptor dependencyComponent = null;
         String dependencyComponentId = dependencyMap.get("component");
@@ -139,8 +139,19 @@ public class DALLoader implements IDALLoader {
   protected <T> T typize(Object object, String message) {
     T result;
     try {
-      result = (T) object;
+        result = (T) object;
     } catch (ClassCastException exc) {
+        throw InvalidConfigurationException.create(message);
+    }
+    return result;
+  }
+
+  protected <T> T ensureClass(Class<T> klass, Object object, String message) {
+    T result;
+    try {
+        result = klass.cast(object);
+    } catch (ClassCastException exc) {
+      Logging.error(String.format("Object '%s' cannot be cast as '%s'", object, klass));
       throw InvalidConfigurationException.create(message);
     }
     return result;
