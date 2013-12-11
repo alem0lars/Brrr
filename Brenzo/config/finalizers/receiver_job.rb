@@ -1,1 +1,0 @@
-puts "PIPPO finish"
