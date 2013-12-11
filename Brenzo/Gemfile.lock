@@ -41,7 +41,11 @@ GEM
     builder (3.1.4)
     coderay (1.1.0)
     connection_pool (1.2.0)
+    em-websocket-client (0.1.2)
+      eventmachine
+      websocket
     erubis (2.7.0)
+    eventmachine (1.0.3)
     hike (1.2.3)
     i18n (0.6.9)
     mail (2.5.4)
@@ -101,11 +105,13 @@ GEM
       polyglot
       polyglot (>= 0.3.1)
     tzinfo (0.3.38)
+    websocket (1.1.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  em-websocket-client
   mongoid!
   pry
   rails (= 4.0.2)

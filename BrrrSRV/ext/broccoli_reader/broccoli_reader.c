@@ -252,7 +252,7 @@ static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint6
     char resp_addr_str[INET6_ADDRSTRLEN];
     char *data_b64;
     json_object* j_obj;
-    json_object* j_origin;
+    json_object* j_originator;
     json_object* j_responder;
     char* out_jstr;
     VALUE r_str;
@@ -294,11 +294,14 @@ static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint6
 
     j_obj = json_object_new_object();
 
-    // Add origin.
-    j_origin = json_object_new_object();
-    json_object_object_add(j_origin, "addr", json_object_new_string(orig_addr_str));
-    json_object_object_add(j_origin, "port", json_object_new_int(b_orig_port->port_num));
-    json_object_object_add(j_obj, "origin", j_origin);
+    // Add connection id.
+    json_object_object_add(j_obj, "connection_id", json_object_new_string(bro_string_get_data(b_conn_uid)));
+
+    // Add originator.
+    j_originator = json_object_new_object();
+    json_object_object_add(j_originator, "addr", json_object_new_string(orig_addr_str));
+    json_object_object_add(j_originator, "port", json_object_new_int(b_orig_port->port_num));
+    json_object_object_add(j_obj, "originator", j_originator);
 
     // Add responder.
     j_responder = json_object_new_object();
@@ -309,7 +312,7 @@ static void on_tcp_contents(BroConn* bc, void* user_data, BroRecord* conn, uint6
     // Add data, data direction, and sequence number.
     json_object_object_add(j_obj, "data", json_object_new_string(data_b64));
     json_object_object_add(j_obj, "seq_num", json_object_new_int(*seq));
-    json_object_object_add(j_obj, "is_origin_data", json_object_new_boolean(*is_orig));
+    json_object_object_add(j_obj, "is_originator_data", json_object_new_boolean(*is_orig));
 
     out_jstr = json_object_to_json_string(j_obj);
 
