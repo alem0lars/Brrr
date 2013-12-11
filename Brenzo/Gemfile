@@ -1,8 +1,11 @@
 source "https://rubygems.org"
 
+
 gem "rails", "4.0.2"
 gem "rails-api"
-
-gem 'mongoid', github: 'mongoid/mongoid'
-
 gem "em-websocket-client"
+gem "mongoid", github: "mongoid/mongoid"
+
+group :development do
+  gem "pry"
+end
