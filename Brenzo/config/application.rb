@@ -27,5 +27,11 @@ module Brenzo
 
     # Disable the asset pipeline.
     config.assets.enabled = false
+
+    # Enable PRY as the default console.
+    console do
+      require "pry"
+      config.console = Pry
+    end
   end
 end

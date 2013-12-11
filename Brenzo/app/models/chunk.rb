@@ -1,5 +1,5 @@
 class Chunk
   include Mongoid::Document
-  field :data, type: String
-  embedded_in :netflow
+  field :data, type: BSON::Binary
+  belongs_to :netflow
 end

@@ -12,7 +12,6 @@ development:
       options:
         read: primary
         max_retries: 32
-        use_utc: true
   options:
     preload_models: true
 
@@ -26,5 +25,3 @@ test:
         read: primary
         max_retries: 1
         retry_interval: 0
-        use_utc: true
-
