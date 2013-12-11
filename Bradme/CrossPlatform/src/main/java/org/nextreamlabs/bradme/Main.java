@@ -4,13 +4,14 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.nextreamlabs.bradme.config.ConfigBuilder;
-import org.nextreamlabs.bradme.config.IConfiguration;
 import org.nextreamlabs.bradme.config.GlobalConfig;
+import org.nextreamlabs.bradme.config.IConfiguration;
 import org.nextreamlabs.bradme.controllers.AppController;
 import org.nextreamlabs.bradme.controllers.IController;
 import org.nextreamlabs.bradme.support.L10N;
 import org.nextreamlabs.bradme.support.Logging;
 import org.nextreamlabs.bradme.views.AppView;
+import org.nextreamlabs.bradme.views.IAppView;
 
 /**
  * The application entry point.
@@ -30,7 +31,7 @@ public class Main extends Application {
   public void start(Stage primaryStage) throws Exception {
     Logging.info("Application starting");
     IController appController = AppController.create();
-    AppView appView = AppView.create(appController);
+    IAppView appView = AppView.create(appController);
     primaryStage.setTitle(L10N.t("bradme_title"));
     primaryStage.setScene(new Scene(appView.getRootNode(), MAIN_SCENE_WIDTH, MAIN_SCENE_HEIGHT));
     primaryStage.show();

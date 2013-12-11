@@ -8,7 +8,7 @@ import org.nextreamlabs.bradme.support.L10N;
 
 public class StatusesFactory
     extends ModelFactoryWithCache<StatusDescriptor, IStatus>
-    implements IModelFactoryWithCache<StatusDescriptor, IStatus> {
+    implements IStatusesFactory {
 
   // { Construction
 
@@ -17,7 +17,7 @@ public class StatusesFactory
     this.initializeCache();
   }
 
-  public static StatusesFactory create() {
+  public static IStatusesFactory create() {
     return new StatusesFactory();
   }
 

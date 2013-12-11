@@ -18,19 +18,19 @@ import java.util.Map;
 
 public class ComponentsFactory
     extends ModelFactoryWithCache<ComponentDescriptor, IComponent>
-    implements IModelFactoryWithCache<ComponentDescriptor, IComponent> {
+    implements IComponentsFactory {
 
-  private final StatusesFactory statusesFactory;
+  private final IStatusesFactory statusesFactory;
 
   // { Construction
 
-  protected ComponentsFactory(StatusesFactory statusesFactory) {
+  protected ComponentsFactory(IStatusesFactory statusesFactory) {
     super();
     this.statusesFactory = statusesFactory;
     this.initializeCache();
   }
 
-  public static ComponentsFactory create(StatusesFactory statusesFactory) {
+  public static IComponentsFactory create(IStatusesFactory statusesFactory) {
     return new ComponentsFactory(statusesFactory);
   }
 

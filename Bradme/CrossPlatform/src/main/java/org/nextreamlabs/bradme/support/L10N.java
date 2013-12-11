@@ -6,11 +6,24 @@ import org.nextreamlabs.bradme.exceptions.UnsupportedLocaleException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * Utility class to handle localization.
+ */
 public class L10N {
 
+  /**
+   * The locale used in the application.
+   */
   private static Locale currentLocale;
+
+  /**
+   * The bundle which contains all of the localization resources.
+   */
   private static ResourceBundle l10nResources;
 
+  /**
+   * The available languages are values of this enum.
+   */
   public enum Lang {
     IT("it"),
     EN("en");
@@ -29,6 +42,13 @@ public class L10N {
 
   /* { Construction */
 
+  /**
+   * Initialize the static variables, like:
+   * <ul>
+   *  <li>currentLocale</li>
+   *  <li>l10nResources</li>
+   * </ul>
+   */
   static {
 
     Locale[] supportedLocales = new Locale[]{
@@ -51,11 +71,16 @@ public class L10N {
     l10nResources = ResourceBundle.getBundle("org.nextreamlabs.bradme.resources.strings", L10N.getCurrent());
   }
 
-  private L10N() {
-  }
+  /**
+   * This constructor is private to prevent instantiation.
+   */
+  private L10N() { }
 
   /* } */
 
+  /**
+   * @return The current locale.
+   */
   public static Locale getCurrent() {
     return currentLocale;
   }

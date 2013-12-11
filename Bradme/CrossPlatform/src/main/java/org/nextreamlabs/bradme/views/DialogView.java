@@ -8,13 +8,15 @@ public class DialogView extends StandaloneView implements IDialogView {
 
   protected String text;
 
+  // { Construction
+
   protected DialogView(String text) {
     super();
     this.text = text;
     this.initializeViewContent();
   }
 
-  public static DialogView create(String text) {
+  public static IDialogView create(String text) {
     return new DialogView(text);
   }
 

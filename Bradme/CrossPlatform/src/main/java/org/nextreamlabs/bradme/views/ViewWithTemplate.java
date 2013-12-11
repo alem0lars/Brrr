@@ -4,12 +4,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import org.nextreamlabs.bradme.controllers.IController;
 import org.nextreamlabs.bradme.exceptions.CannotCreateViewException;
+import org.nextreamlabs.bradme.exceptions.TemplateNotFoundException;
 import org.nextreamlabs.bradme.support.Logging;
-import org.nextreamlabs.bradme.support.Templates;
 
 import java.io.IOException;
+import java.net.URL;
 
-public abstract class ViewWithTemplate<TRootNode extends Node> implements IViewWithTemplate {
+public abstract class ViewWithTemplate<TRootNode extends Node> implements IViewWithTemplate<TRootNode> {
+
+  protected static final String TEMPLATE_PATH;
 
   private final String templateName;
   private final FXMLLoader loader;
@@ -17,9 +20,13 @@ public abstract class ViewWithTemplate<TRootNode extends Node> implements IViewW
 
   // { Construction
 
+  static {
+    TEMPLATE_PATH = "/org/nextreamlabs/bradme/templates/%s.fxml";
+  }
+
   protected ViewWithTemplate(String templateName, IController controller) {
     this.templateName = templateName;
-    this.loader = new FXMLLoader(Templates.getTemplateURL(this.templateName));
+    this.loader = new FXMLLoader(this.getTemplateURL());
     if (controller != null) {
       this.loader.setController(controller);
     }
@@ -53,6 +60,15 @@ public abstract class ViewWithTemplate<TRootNode extends Node> implements IViewW
 
   protected String getTemplateName() {
     return this.templateName;
+  }
+
+  protected URL getTemplateURL() {
+    String templatePath = String.format(TEMPLATE_PATH, this.getTemplateName());
+    URL templateURL = this.getClass().getResource(templatePath);
+    if (templateURL == null) {
+      throw TemplateNotFoundException.create(templatePath);
+    }
+    return templateURL;
   }
 
 }

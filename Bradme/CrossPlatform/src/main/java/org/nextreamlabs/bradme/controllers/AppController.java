@@ -12,19 +12,18 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import org.nextreamlabs.bradme.dal.DALLoader;
 import org.nextreamlabs.bradme.dal.descriptors.ComponentDescriptor;
-import org.nextreamlabs.bradme.dal.repositories.AvailableStatusesRepository;
 import org.nextreamlabs.bradme.dal.repositories.AvailableComponentsRepository;
+import org.nextreamlabs.bradme.dal.repositories.AvailableStatusesRepository;
 import org.nextreamlabs.bradme.exceptions.CannotCreateViewException;
 import org.nextreamlabs.bradme.exceptions.InvalidConfigurationException;
-import org.nextreamlabs.bradme.factories.models_factories.StatusesFactory;
 import org.nextreamlabs.bradme.factories.models_factories.ComponentsFactory;
+import org.nextreamlabs.bradme.factories.models_factories.IComponentsFactory;
+import org.nextreamlabs.bradme.factories.models_factories.IStatusesFactory;
+import org.nextreamlabs.bradme.factories.models_factories.StatusesFactory;
 import org.nextreamlabs.bradme.models.component.IComponent;
 import org.nextreamlabs.bradme.support.L10N;
 import org.nextreamlabs.bradme.support.Logging;
-import org.nextreamlabs.bradme.views.ComponentView;
-import org.nextreamlabs.bradme.views.DialogView;
-import org.nextreamlabs.bradme.views.IStandaloneView;
-import org.nextreamlabs.bradme.views.IViewWithTemplate;
+import org.nextreamlabs.bradme.views.*;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;
@@ -32,8 +31,8 @@ import java.util.LinkedList;
 
 public class AppController extends Controller implements IController {
 
-  private ComponentsFactory componentsFactory;
-  private StatusesFactory statusesFactory;
+  private IComponentsFactory componentsFactory;
+  private IStatusesFactory statusesFactory;
 
   // { Controls
 
@@ -92,21 +91,26 @@ public class AppController extends Controller implements IController {
 
   @FXML
   protected void loadData() {
-    try {
-      this.isConfigured.setValue(false);
-      String path = "/usr/local/archive/projects/Brrr/data/components.yml";
-      //String path = "/Users/alem0lars/projects/Brrr/data/components.yml";
-      DALLoader dalLoader = DALLoader.create(path);
-      dalLoader.load();
-      AvailableStatusesRepository.configureRepository(dalLoader);
-      AvailableComponentsRepository.configureRepository(dalLoader);
-      this.statusesFactory = StatusesFactory.create();
-      this.componentsFactory = ComponentsFactory.create(this.statusesFactory);
-      this.isConfigured.setValue(true);
-    } catch (FileNotFoundException e) {
-      Logging.error(e.getMessage());
-    } catch (InvalidConfigurationException e) {
-      Logging.error(e.getMessage());
+
+    String filePath = null;
+
+    IFileChooserView fileChooserView = FileChooserView.create();
+    fileChooserView.show();
+    filePath = fileChooserView.getFilePath();
+
+    if (filePath != null) {
+      try {
+        this.isConfigured.setValue(false);
+        DALLoader dalLoader = DALLoader.create(filePath);
+        dalLoader.load();
+        AvailableStatusesRepository.configureRepository(dalLoader);
+        AvailableComponentsRepository.configureRepository(dalLoader);
+        this.statusesFactory = StatusesFactory.create();
+        this.componentsFactory = ComponentsFactory.create(this.statusesFactory);
+        this.isConfigured.setValue(true);
+      } catch (FileNotFoundException | InvalidConfigurationException e) {
+        Logging.error(e.getMessage());
+      }
     }
   }
 
@@ -168,7 +172,7 @@ public class AppController extends Controller implements IController {
       IController controller = ComponentController.create(component);
 
       try {
-        IViewWithTemplate appView = ComponentView.create(controller);
+        IComponentView appView = ComponentView.create(controller);
         this.componentsControl.getChildren().add(appView.getRootNode());
       } catch(CannotCreateViewException exc) {
         Logging.warn(String.format("Skipping the component: %s. Reason: %s", component, exc.getMessage()));

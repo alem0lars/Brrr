@@ -7,7 +7,7 @@ import org.nextreamlabs.bradme.support.L10N;
 
 public class ComponentStatusesFactory
     extends ModelFactory<ComponentStatusDescriptor, IComponentStatus>
-    implements IModelFactory<ComponentStatusDescriptor, IComponentStatus> {
+    implements IComponentStatusesFactory {
 
   // { Construction
 
@@ -15,7 +15,7 @@ public class ComponentStatusesFactory
     super();
   }
 
-  public static ComponentStatusesFactory create() {
+  public static IComponentStatusesFactory create() {
     return new ComponentStatusesFactory();
   }
 
