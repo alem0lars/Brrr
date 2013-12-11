@@ -10,6 +10,7 @@ import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
 import org.nextreamlabs.bradme.models.status.IStatus;
 import org.nextreamlabs.bradme.support.Logging;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
@@ -182,18 +183,28 @@ public class Component implements IComponent {
 
   protected void resetCurrentStatus() {
     this.currentStatus().setValue(this.statuses().get(0).getValue());
-      // TODO: see goToNextStatus()
+      // TODO: see goToNextStatus(). Need to refactor the state change.
     this.nextStatus().setValue(this.findNextStatus(this.currentStatus().getValue()));
   }
 
   protected void goToNextStatus() {
     IComponentStatus current = this.currentStatus().getValue();
     IComponentStatus next = this.findNextStatus(current);
-    Logging.debug(String.format("%s : changing status: %s -> %s", this, current.getPrettyName(), next.getPrettyName()));
+    Logging.debug(String.format("%s : changing status: '%s' -> '%s'", this, current.getPrettyName(), next.getPrettyName()));
     this.currentStatus().setValue(next);
     String cmd = next.getCommandOnEnter().getValue();
-    Logging.debug(String.format("%s : entered status: %s; executing cmd: %s", this, next.getPrettyName(), cmd));
-    // TODO: execute command
+    Logging.debug(String.format("%s : entered status: '%s'; executing cmd: '%s'", this, next.getPrettyName(), cmd));
+    try {
+      Process child = Runtime.getRuntime().exec(cmd); // TODO: capture streams?
+    } catch (IllegalArgumentException e) {
+      Logging.debug(String.format("%s : executing cmd '%s' : caught '%s': ignoring.", this, cmd, e.getMessage()));
+    } catch (NullPointerException e) {
+      Logging.debug(String.format("%s : executing cmd '%s' : caught '%s': ignoring.", this, cmd, e.getMessage()));
+    } catch (IOException e) {
+      Logging.error(String.format("%s : executing cmd '%s': caught '%s'", this, cmd, e.getMessage()));
+    } catch (SecurityException e) {
+      Logging.error(String.format("%s : executing cmd '%s': caught '%s'", this, cmd, e.getMessage()));
+    }
     this.nextStatus().setValue(this.findNextStatus(this.nextStatus().getValue()));
   }
 
