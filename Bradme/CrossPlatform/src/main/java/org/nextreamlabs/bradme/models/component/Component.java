@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
 import org.nextreamlabs.bradme.models.status.IStatus;
+import org.nextreamlabs.bradme.support.Logging;
 
 import java.util.Collection;
 import java.util.Map;
@@ -181,11 +182,18 @@ public class Component implements IComponent {
 
   protected void resetCurrentStatus() {
     this.currentStatus().setValue(this.statuses().get(0).getValue());
+      // TODO: see goToNextStatus()
     this.nextStatus().setValue(this.findNextStatus(this.currentStatus().getValue()));
   }
 
   protected void goToNextStatus() {
-    this.currentStatus().setValue(this.findNextStatus(this.currentStatus().getValue()));
+    IComponentStatus current = this.currentStatus().getValue();
+    IComponentStatus next = this.findNextStatus(current);
+    Logging.debug(String.format("%s : changing status: %s -> %s", this, current.getPrettyName(), next.getPrettyName()));
+    this.currentStatus().setValue(next);
+    String cmd = next.getCommandOnEnter().getValue();
+    Logging.debug(String.format("%s : entered status: %s; executing cmd: %s", this, next.getPrettyName(), cmd));
+    // TODO: execute command
     this.nextStatus().setValue(this.findNextStatus(this.nextStatus().getValue()));
   }
 

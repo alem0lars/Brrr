@@ -13,9 +13,9 @@ components:
   - id: reader
     statuses:
       - id: stopped
-        cmd: ""
+        cmd: "foreman stop reader"
       - id: started
-        cmd: ""
+        cmd: "foreman start reader"
     dependencies:
       - component: brol
         status: started
@@ -23,9 +23,9 @@ components:
   - id: pusher
     statuses:
       - id: stopped
-        cmd: ""
+        cmd: "foreman stop pusher"
       - id: started
-        cmd: ""
+        cmd: "foreman start pusher"
     dependencies:
       - component: reader
         status: started
