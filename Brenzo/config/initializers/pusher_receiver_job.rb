@@ -1,4 +1,6 @@
 require "pusher_receiver_job"
 
 
-Jobs::PusherReceiverJob[:default].start
+Thread.new do
+  Jobs::PusherReceiverJob[:default].start
+end

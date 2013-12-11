@@ -9,22 +9,9 @@ module Jobs
     class << self
       attr_accessor :jobs
       attr_reader :default_options
-
-      def initialize
-        @jobs = {}
-        @default_options = {
-          :host => "127.0.0.1",
-          :port => 8000,
-          :logger => Rails.logger
-        }
-      end
-
+      
       def [] name
-        if jobs.has_key?(name)
-          jobs[name]
-        else
-          jobs[name] = PusherReceiverJob.new
-        end
+        jobs[name] || jobs[name] = new
       end
 
       def []= name, job
@@ -32,54 +19,79 @@ module Jobs
       end
     end
 
+    # { Class fields initialization
+
+    @jobs = {}
+
+    @default_options = {
+      host: "127.0.0.1",
+      port: 8000,
+      logger: Rails.logger
+    }
+
+    # }
+
   end
 end
 
 
 class Jobs::PusherReceiverJob
 
-  attr_reader :options, :logger, :host, :port
+  attr_reader :options, :logger, :host, :port, :conn_str, :is_connected
 
   def initialize(options = {})
-    opts = PusherReceiverJob.default_options.merge(options)
-    
+    opts = self.class.default_options.merge(options)
+
     @host = opts[:host]
     @port = opts[:port]
+    @conn_str = "ws://#{host}:#{port}/"
     @logger = opts[:logger]
-    @options = opts
+
+    @is_connected = false
   end
 
   def start
     EM.run do
-      conn_str = "ws://#{@host}:#{@port}/"
-
       conn = EventMachine::WebSocketClient.connect(conn_str)
 
       conn.callback do
-        @logger.info "Connected to '#{conn_str}'."
+        is_connected = true
+        logger.info "Connected to '#{conn_str}'."
+        logger.info "Started the pusher receiver"
       end
 
       conn.errback do |error|
-        @logger.error "Got error: '#{error}'."
+        logger.error "Got error: '#{error}'."
+        is_connected = false
       end
 
       conn.stream do |msg|
-        @logger.debug { "Got message: '#{msg.inspect}'." }
+        logger.debug { "Got message: '#{msg.inspect}'." }
         handle_data(msg.data)
       end
 
       conn.disconnect do
-        @logger.info "Disconnected from '#{conn_str}'."
-        EM::stop_event_loop
+        puts "asd"
+        if is_connected
+          logger.info "Disconnected from '#{conn_str}'."
+          EM::stop_event_loop
+          is_connected = false
+        end
       end
     end
   end
 
   def stop
-    EM.stop if EM.reactor_running?
+    if is_connected
+      EM.stop if EM.reactor_running?
+      logger.info "Stopped the pusher receiver"
+      is_connected = false
+    end
   end
 
   protected
+
+    attr_writer :is_connected
 
     def handle_data(data)
       json = JSON.parse(data, :symbolize_names => true)
