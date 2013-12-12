@@ -26,9 +26,9 @@ public class ComponentStatusesFactory
   @Override
   protected IComponentStatus createElement(ComponentStatusDescriptor componentStatusDescriptor) {
     return ComponentStatus.create(
-        L10N.t(componentStatusDescriptor.nameKey),
-        L10N.t(componentStatusDescriptor.descKey),
-        L10N.t(componentStatusDescriptor.actionNameKey),
+        L10N.t(componentStatusDescriptor.getNameKey()),
+        L10N.t(componentStatusDescriptor.getDescKey()),
+        L10N.t(componentStatusDescriptor.getActionNameKey()),
         componentStatusDescriptor.commandOnEnter);
   }
 

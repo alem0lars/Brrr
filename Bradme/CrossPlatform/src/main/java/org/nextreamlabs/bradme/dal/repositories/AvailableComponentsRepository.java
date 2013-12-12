@@ -1,20 +1,20 @@
 package org.nextreamlabs.bradme.dal.repositories;
 
 import org.nextreamlabs.bradme.dal.IDALLoader;
-import org.nextreamlabs.bradme.dal.descriptors.ComponentDescriptor;
+import org.nextreamlabs.bradme.dal.descriptors.IComponentDescriptor;
 import org.nextreamlabs.bradme.exceptions.InvalidConfigurationException;
 
 import java.util.Collection;
 
 public class AvailableComponentsRepository
-    extends Repository<ComponentDescriptor>
+    extends Repository<IComponentDescriptor>
     implements IAvailableComponentsRepository {
 
   private static IAvailableComponentsRepository instance;
 
   // { Construction
 
-  protected AvailableComponentsRepository(Collection<ComponentDescriptor> componentDescriptors) {
+  protected AvailableComponentsRepository(Collection<IComponentDescriptor> componentDescriptors) {
     super(componentDescriptors);
   }
 

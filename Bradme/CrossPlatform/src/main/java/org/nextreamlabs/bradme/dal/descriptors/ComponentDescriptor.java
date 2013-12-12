@@ -7,17 +7,17 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class ComponentDescriptor {
+public class ComponentDescriptor implements IComponentDescriptor {
 
-  public String id;
-  public String nameKey;
-  public String descKey;
-  public Collection<ComponentStatusDescriptor> statuses;
-  public Map<ComponentDescriptor, StatusDescriptor> dependencies;
+  protected String id;
+  protected String nameKey;
+  protected String descKey;
+  protected Collection<ComponentStatusDescriptor> statuses;
+  protected Map<IComponentDescriptor, IStatusDescriptor> dependencies;
 
   // { Construction
 
-  protected ComponentDescriptor(String id, Collection<ComponentStatusDescriptor> statuses, Map<ComponentDescriptor, StatusDescriptor> dependencies) {
+  protected ComponentDescriptor(String id, Collection<ComponentStatusDescriptor> statuses, Map<IComponentDescriptor, IStatusDescriptor> dependencies) {
     this.id = id;
     this.nameKey = String.format("%s_name", id);
     this.descKey = String.format("%s_desc", id);
@@ -25,8 +25,32 @@ public class ComponentDescriptor {
     this.dependencies = new HashMap<>(dependencies);
   }
 
-  public static ComponentDescriptor create(String id, Collection<ComponentStatusDescriptor> statuses, Map<ComponentDescriptor, StatusDescriptor> dependencies) {
+  public static IComponentDescriptor create(String id, Collection<ComponentStatusDescriptor> statuses, Map<IComponentDescriptor, IStatusDescriptor> dependencies) {
     return new ComponentDescriptor(id, statuses, dependencies);
+  }
+
+  // }
+
+  // { IComponentDescriptor implementation
+
+  public String getId() {
+    return this.id;
+  }
+
+  public String getNameKey() {
+    return this.nameKey;
+  }
+
+  public String getDescKey() {
+    return this.descKey;
+  }
+
+  public Collection<ComponentStatusDescriptor> getStatuses() {
+    return this.statuses;
+  }
+
+  public Map<IComponentDescriptor, IStatusDescriptor> getDependencies() {
+    return this.dependencies;
   }
 
   // }

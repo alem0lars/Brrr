@@ -1,20 +1,20 @@
 package org.nextreamlabs.bradme.dal.repositories;
 
 import org.nextreamlabs.bradme.dal.IDALLoader;
-import org.nextreamlabs.bradme.dal.descriptors.StatusDescriptor;
+import org.nextreamlabs.bradme.dal.descriptors.IStatusDescriptor;
 import org.nextreamlabs.bradme.exceptions.InvalidConfigurationException;
 
 import java.util.Collection;
 
 public class AvailableStatusesRepository
-    extends Repository<StatusDescriptor>
+    extends Repository<IStatusDescriptor>
     implements IAvailableStatusesRepository {
 
   private static IAvailableStatusesRepository instance;
 
   // { Construction
 
-  private AvailableStatusesRepository(Collection<StatusDescriptor> statusDescriptors) {
+  private AvailableStatusesRepository(Collection<IStatusDescriptor> statusDescriptors) {
     super(statusDescriptors);
   }
 
@@ -35,9 +35,9 @@ public class AvailableStatusesRepository
 
   // }
 
-  public StatusDescriptor findByNameKey(String statusNameKey) {
-    for (StatusDescriptor descriptor : this.values()) {
-      if (descriptor.nameKey.equals(statusNameKey)) {
+  public IStatusDescriptor findByNameKey(String statusNameKey) {
+    for (IStatusDescriptor descriptor : this.values()) {
+      if (descriptor.getNameKey().equals(statusNameKey)) {
         return descriptor;
       }
     }

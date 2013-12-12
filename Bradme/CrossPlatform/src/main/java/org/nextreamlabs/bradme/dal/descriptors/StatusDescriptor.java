@@ -2,12 +2,12 @@ package org.nextreamlabs.bradme.dal.descriptors;
 
 import org.nextreamlabs.bradme.support.L10N;
 
-public class StatusDescriptor {
+public class StatusDescriptor implements IStatusDescriptor {
 
-  public String id;
-  public String actionNameKey;
-  public String nameKey;
-  public String descKey;
+  protected String id;
+  protected String actionNameKey;
+  protected String nameKey;
+  protected String descKey;
 
   // { Construction
 
@@ -18,8 +18,28 @@ public class StatusDescriptor {
     this.actionNameKey = String.format("%s_action_name", id);
   }
 
-  public static StatusDescriptor create(String id) {
+  public static IStatusDescriptor create(String id) {
     return new StatusDescriptor(id);
+  }
+
+  // }
+
+  // { IStatusDescriptor implementation
+
+  public String getId() {
+    return this.id;
+  }
+
+  public String getActionNameKey() {
+    return this.actionNameKey;
+  }
+
+  public String getNameKey() {
+    return this.nameKey;
+  }
+
+  public String getDescKey() {
+    return this.descKey;
   }
 
   // }
@@ -31,6 +51,7 @@ public class StatusDescriptor {
 
   @Override
   public boolean equals(Object o) {
+    //noinspection InstanceofInterfaces
     if (!(o instanceof StatusDescriptor)) {
       return false;
     }

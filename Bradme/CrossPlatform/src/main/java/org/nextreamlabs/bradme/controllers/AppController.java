@@ -11,7 +11,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import org.nextreamlabs.bradme.dal.DALLoader;
-import org.nextreamlabs.bradme.dal.descriptors.ComponentDescriptor;
+import org.nextreamlabs.bradme.dal.IDALLoader;
+import org.nextreamlabs.bradme.dal.descriptors.IComponentDescriptor;
 import org.nextreamlabs.bradme.dal.repositories.AvailableComponentsRepository;
 import org.nextreamlabs.bradme.dal.repositories.AvailableStatusesRepository;
 import org.nextreamlabs.bradme.exceptions.CannotCreateViewException;
@@ -101,7 +102,7 @@ public class AppController extends Controller implements IController {
     if (filePath != null) {
       try {
         this.isConfigured.setValue(false);
-        DALLoader dalLoader = DALLoader.create(filePath);
+        IDALLoader dalLoader = DALLoader.create(filePath);
         dalLoader.load();
         AvailableStatusesRepository.configureRepository(dalLoader);
         AvailableComponentsRepository.configureRepository(dalLoader);
@@ -161,7 +162,7 @@ public class AppController extends Controller implements IController {
   }
 
   protected void initializeComponents() {
-    for (ComponentDescriptor componentDescriptor : AvailableComponentsRepository.getInstance().values()) {
+    for (IComponentDescriptor componentDescriptor : AvailableComponentsRepository.getInstance().values()) {
       IComponent component = this.componentsFactory.get(componentDescriptor);
       if (component != null) {
         this.components.add(component);
