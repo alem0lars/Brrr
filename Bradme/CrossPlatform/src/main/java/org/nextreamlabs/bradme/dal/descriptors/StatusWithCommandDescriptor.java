@@ -2,22 +2,29 @@ package org.nextreamlabs.bradme.dal.descriptors;
 
 public class StatusWithCommandDescriptor extends StatusDescriptor implements IStatusWithCommandDescriptor {
 
-  public String commandOnEnter;
+  protected String commandOnEnter;
+  protected String workDir;
 
   // { Construction
 
-  protected StatusWithCommandDescriptor(String id, String commandOnEnter) {
+  protected StatusWithCommandDescriptor(String id, String commandOnEnter, String workDir) {
     super(id);
     this.commandOnEnter = commandOnEnter;
+    this.workDir = workDir;
   }
 
-  public static IStatusWithCommandDescriptor create(String id, String commandOnEnter) {
-    return new StatusWithCommandDescriptor(id, commandOnEnter);
+  public static IStatusWithCommandDescriptor create(String id, String commandOnEnter, String workDir) {
+    return new StatusWithCommandDescriptor(id, commandOnEnter, workDir);
   }
 
   // }
 
   // { IStatusWithCommandDescriptor implementation
+
+  @Override
+  public String getWorkDir() {
+    return this.workDir;  //To change body of implemented methods use File | Settings | File Templates.
+  }
 
   public String getCommandOnEnter() {
     return this.commandOnEnter;
@@ -35,7 +42,8 @@ public class StatusWithCommandDescriptor extends StatusDescriptor implements ISt
     StatusWithCommandDescriptor otherStatusDescriptor = (StatusWithCommandDescriptor) o;
 
     return super.equals(o)
-        && this.commandOnEnter.equals(otherStatusDescriptor.commandOnEnter);
+        && this.getCommandOnEnter().equals(otherStatusDescriptor.getCommandOnEnter())
+        && this.getWorkDir().equals(otherStatusDescriptor.getWorkDir());
   }
 
   private volatile int hashCode;
@@ -46,6 +54,7 @@ public class StatusWithCommandDescriptor extends StatusDescriptor implements ISt
       result = 17;
       result = 31 * result + this.id.hashCode();
       result = 31 * result + this.commandOnEnter.hashCode();
+      result = 31 * result + this.workDir.hashCode();
       hashCode = result;
     }
     return result;
