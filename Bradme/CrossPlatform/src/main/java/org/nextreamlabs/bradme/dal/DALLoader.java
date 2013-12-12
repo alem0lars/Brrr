@@ -29,8 +29,13 @@ public class DALLoader implements IDALLoader {
 
   // }
 
-  public void load() throws FileNotFoundException {
-    this.loadedContent = (Map<String, Object>) this.yaml.load(new BufferedReader(new FileReader(this.dbPath)));
+  public void load() {
+    try {
+      this.loadedContent = (Map<String, Object>) this.yaml.load(new BufferedReader(new FileReader(this.dbPath)));
+    } catch (Exception e) {
+      Logging.error(String.format("Cannot load configuration file: '%s': %s", this.dbPath, e.getMessage()));
+      throw InvalidConfigurationException.create(e.getMessage());
+    }
     Logging.debug("Loaded the components data into: " + this.loadedContent);
   }
 

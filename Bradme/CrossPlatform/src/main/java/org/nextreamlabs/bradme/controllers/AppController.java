@@ -26,7 +26,6 @@ import org.nextreamlabs.bradme.support.L10N;
 import org.nextreamlabs.bradme.support.Logging;
 import org.nextreamlabs.bradme.views.*;
 
-import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -109,7 +108,7 @@ public class AppController extends Controller implements IController {
         this.statusesFactory = StatusesFactory.create();
         this.componentsFactory = ComponentsFactory.create(this.statusesFactory);
         this.isConfigured.setValue(true);
-      } catch (FileNotFoundException | InvalidConfigurationException e) {
+      } catch (InvalidConfigurationException e) {
         Logging.error(e.getMessage());
       }
     }
