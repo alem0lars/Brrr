@@ -46,7 +46,7 @@ public class Main extends Application {
   }
 
   public static void main(String[] args) {
-    IConfiguration config = ConfigBuilder.create().parse_args(args);
+    IConfiguration config = ConfigBuilder.create().parseArgs(args);
     GlobalConfig.set(config);
     launch(args);
   }
