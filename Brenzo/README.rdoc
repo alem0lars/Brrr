@@ -1,5 +1,12 @@
 == Brenzo
 
-Brenzo is the architect for Brrr. It receives data from BrrrSRV (the pusher subcomponent) and provides Restful APIs.
+Brenzo is the architect for Brrr. It receives data from BrrrSRV
+(the pusher subcomponent) and provides Restful APIs.
 
 Brenzo is the preferred way for clients to connect to the Brrr system.
+
+=== Starting Up
+
+Run:
+* `rake db:mongoid:create_indexes`
+* `rake db:seed`

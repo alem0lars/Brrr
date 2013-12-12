@@ -71,7 +71,6 @@ class Jobs::PusherReceiverJob
       end
 
       conn.disconnect do
-        puts "asd"
         if is_connected
           logger.info "Disconnected from '#{conn_str}'."
           EM::stop_event_loop
@@ -94,39 +93,23 @@ class Jobs::PusherReceiverJob
     attr_writer :is_connected
 
     def handle_data(data)
-      json = JSON.parse(data, :symbolize_names => true)
+      info = JSON.parse(data, :symbolize_names => true)
 
-      chunk = new_chunk(json[:data])
+      service = Service.undefined # TODO: Change to pick the right service. How?
 
-      originator = new_endpoint(json[:originator])
-      responder = new_endpoint(json[:responder])
-      netflow = new_netflow(json[:connection_id])
-      service = new_service() # TODO: we don't have service infos yet.
+      endpoints = [:originator, :responder].collect do |endpoint_name|
+        endpoint_info = info[endpoint_name]
+        Endpoint.find_or_create_by(
+            address: endpoint_info[:address],
+            port: endpoint_info[:port])
+      end
 
-      netflow.chunks << chunk
+      netflow = Netflow.find_or_create_by(
+          connection_id: info[:connection_id],
+          originator: endpoints[0],
+          responder: endpoints[1])
 
-      originator.used_as_originator_in << netflow
-      originator.save
-
-      responder.used_as_responder_in << netflow
-      responder.save
-    end
-
-    def new_endpoint(j_endp)
-      Endpoint.new(address: j_endp[:addr], port: j_endp[:port])
-    end
-
-    def new_chunk(chunk_data)
-      Chunk.new(data: Base64.decode64(chunk_data))
-    end
-
-    def new_netflow(connection_id)
-      Netflow.new(connection_id: connection_id)
-    end
-
-    # TODO: implement (we don't have service infos yet).
-    def new_service()
-      nil
+      chunk = Chunk.create(data: Base64.decode64(info[:data]), netflow: netflow)
     end
 
 end
