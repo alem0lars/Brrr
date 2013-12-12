@@ -6,7 +6,6 @@ import org.nextreamlabs.bradme.support.Logging;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
 
@@ -29,6 +28,9 @@ public class DALLoader implements IDALLoader {
 
   // }
 
+
+  // { IDALLoader implementation
+
   public void load() {
     try {
       this.loadedContent = (Map<String, Object>) this.yaml.load(new BufferedReader(new FileReader(this.dbPath)));
@@ -39,9 +41,6 @@ public class DALLoader implements IDALLoader {
     Logging.debug("Loaded the components data into: " + this.loadedContent);
   }
 
-  // { Queries
-
-  @Override
   public Collection<IStatusDescriptor> queryStatusDescriptors() {
     Collection<IStatusDescriptor> statusDescriptors = new LinkedList<>();
     String statusesKey = "statuses";
@@ -60,7 +59,6 @@ public class DALLoader implements IDALLoader {
     return statusDescriptors;
   }
 
-  @Override
   public Collection<IComponentDescriptor> queryComponentDescriptors() {
     Collection<IStatusDescriptor> availableStatusDescriptors = queryStatusDescriptors();
     Collection<IComponentDescriptor> componentDescriptors = new LinkedList<>();
@@ -138,16 +136,6 @@ public class DALLoader implements IDALLoader {
   // }
 
   // { Data handling utilities
-
-  protected <T> T typize(Object object, String message) {
-    T result;
-    try {
-        result = (T) object;
-    } catch (ClassCastException exc) {
-        throw InvalidConfigurationException.create(message);
-    }
-    return result;
-  }
 
   protected <T> T ensureClass(Class<T> klass, Object object, String message) {
     T result;
