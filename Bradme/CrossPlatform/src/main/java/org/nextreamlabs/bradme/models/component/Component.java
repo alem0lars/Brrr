@@ -6,7 +6,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
+import org.nextreamlabs.bradme.models.status.IStatusWithCommand;
 import org.nextreamlabs.bradme.models.status.IStatus;
 import org.nextreamlabs.bradme.support.Logging;
 
@@ -18,9 +18,9 @@ public class Component implements IComponent {
 
   private StringProperty name;
   private StringProperty desc;
-  private ObjectProperty<IComponentStatus> currentStatus;
-  private ObjectProperty<IComponentStatus> nextStatus;
-  private ListProperty<ObjectProperty<IComponentStatus>> statuses;
+  private ObjectProperty<IStatusWithCommand> currentStatus;
+  private ObjectProperty<IStatusWithCommand> nextStatus;
+  private ListProperty<ObjectProperty<IStatusWithCommand>> statuses;
   private MapProperty<ObjectProperty<IComponent>, ObjectProperty<IStatus>> dependencies;
   private BooleanProperty areDependenciesSatisfied;
 
@@ -28,7 +28,7 @@ public class Component implements IComponent {
 
   protected Component(
       String name, String desc,
-      Collection<IComponentStatus> statuses,
+      Collection<IStatusWithCommand> statuses,
       Map<IComponent, IStatus> dependencies) {
     if (statuses.size() == 0) {
       throw new IllegalArgumentException("statuses cannot be empty");
@@ -38,8 +38,8 @@ public class Component implements IComponent {
 
     this.desc = new SimpleStringProperty(desc);
 
-    ObservableList<ObjectProperty<IComponentStatus>> tmpStatuses = FXCollections.observableArrayList();
-    for (IComponentStatus status : statuses) {
+    ObservableList<ObjectProperty<IStatusWithCommand>> tmpStatuses = FXCollections.observableArrayList();
+    for (IStatusWithCommand status : statuses) {
       tmpStatuses.add(new SimpleObjectProperty<>(status));
     }
     this.statuses = new SimpleListProperty<>(tmpStatuses);
@@ -59,7 +59,7 @@ public class Component implements IComponent {
 
   public static IComponent create(
       String name, String desc,
-      Collection<IComponentStatus> statuses,
+      Collection<IStatusWithCommand> statuses,
       Map<IComponent, IStatus> dependencies) {
     return new Component(name, desc, statuses, dependencies);
   }
@@ -76,11 +76,11 @@ public class Component implements IComponent {
     return this.desc;
   }
 
-  public ObjectProperty<IComponentStatus> currentStatus() {
+  public ObjectProperty<IStatusWithCommand> currentStatus() {
     return this.currentStatus;
   }
 
-  public ListProperty<ObjectProperty<IComponentStatus>> statuses() {
+  public ListProperty<ObjectProperty<IStatusWithCommand>> statuses() {
     return this.statuses;
   }
 
@@ -92,7 +92,7 @@ public class Component implements IComponent {
     return this.areDependenciesSatisfied;
   }
 
-  public ObjectProperty<IComponentStatus> nextStatus() {
+  public ObjectProperty<IStatusWithCommand> nextStatus() {
     return this.nextStatus;
   }
 
@@ -163,7 +163,6 @@ public class Component implements IComponent {
       ObjectProperty<IComponent> dependency = entry.getKey();
       ObjectProperty<IStatus> dependencyRequiredStatus = entry.getValue();
       if (!dependency.getValue().areDependenciesSatisfied().getValue() ||
-          // TODO: Fix next row comparison (it should be done between two IStatus (not a IComponentStatus and a IStatus))
           !dependency.getValue().currentStatus().getValue().equalsToStatus(dependencyRequiredStatus.getValue())) {
         return false;
       }
@@ -186,13 +185,13 @@ public class Component implements IComponent {
   }
 
   protected void goToNextStatus() {
-    IComponentStatus current = this.currentStatus().getValue();
-    IComponentStatus next = this.findNextStatus(current);
+    IStatusWithCommand current = this.currentStatus().getValue();
+    IStatusWithCommand next = this.findNextStatus(current);
     this.changeState(next);
   }
 
-  protected void changeState(IComponentStatus nextState) {
-    IComponentStatus current = this.currentStatus().getValue();
+  protected void changeState(IStatusWithCommand nextState) {
+    IStatusWithCommand current = this.currentStatus().getValue();
     Logging.debug(String.format("%s : changing status: '%s' -> '%s'", this, current.getPrettyName(), nextState.getPrettyName()));
 
     // { Update current status.
@@ -218,7 +217,7 @@ public class Component implements IComponent {
     this.nextStatus().setValue(this.findNextStatus(this.currentStatus().getValue()));
   }
 
-  protected IComponentStatus findNextStatus(IStatus status) {
+  protected IStatusWithCommand findNextStatus(IStatus status) {
     int nextStatusIndex = 0;
     for (int i = 0; i < this.statuses().size() - 1; i++) {
       if (this.statuses().get(i).getValue().equals(status)) {

@@ -1,13 +1,13 @@
 package org.nextreamlabs.bradme.factories.models_factories;
 
-import org.nextreamlabs.bradme.dal.descriptors.ComponentStatusDescriptor;
 import org.nextreamlabs.bradme.dal.descriptors.IComponentDescriptor;
 import org.nextreamlabs.bradme.dal.descriptors.IStatusDescriptor;
+import org.nextreamlabs.bradme.dal.descriptors.IStatusWithCommandDescriptor;
 import org.nextreamlabs.bradme.dal.repositories.AvailableComponentsRepository;
 import org.nextreamlabs.bradme.models.component.Component;
 import org.nextreamlabs.bradme.models.component.IComponent;
-import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
 import org.nextreamlabs.bradme.models.status.IStatus;
+import org.nextreamlabs.bradme.models.status.IStatusWithCommand;
 import org.nextreamlabs.bradme.support.L10N;
 import org.nextreamlabs.bradme.support.Logging;
 
@@ -43,10 +43,10 @@ public class ComponentsFactory
     ComponentStatusesFactory componentStatusesFactory = new ComponentStatusesFactory();
 
     Map<IComponent, IStatus> dependencies = this.createDependencies(componentDescriptor.getDependencies());
-    Collection<IComponentStatus> statuses = new LinkedList<>();
+    Collection<IStatusWithCommand> statuses = new LinkedList<>();
 
-    for (ComponentStatusDescriptor componentStatusDescriptor : componentDescriptor.getStatuses()) {
-      statuses.add(componentStatusesFactory.createElement(componentStatusDescriptor));
+    for (IStatusWithCommandDescriptor statusWithCommandDescriptor : componentDescriptor.getStatuses()) {
+      statuses.add(componentStatusesFactory.createElement(statusWithCommandDescriptor));
     }
 
     return Component.create(

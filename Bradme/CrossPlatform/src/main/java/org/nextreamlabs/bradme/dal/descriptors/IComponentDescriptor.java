@@ -7,6 +7,6 @@ public interface IComponentDescriptor {
   public String getId();
   public String getNameKey();
   public String getDescKey();
-  public Collection<ComponentStatusDescriptor> getStatuses();
+  public Collection<IStatusWithCommandDescriptor> getStatuses();
   public Map<IComponentDescriptor, IStatusDescriptor> getDependencies();
 }

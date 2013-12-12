@@ -1,7 +1,8 @@
 package org.nextreamlabs.bradme.factories.models_factories;
 
-import org.nextreamlabs.bradme.dal.descriptors.ComponentStatusDescriptor;
-import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
+import org.nextreamlabs.bradme.dal.descriptors.IStatusWithCommandDescriptor;
+import org.nextreamlabs.bradme.models.status.IStatusWithCommand;
 
-public interface IComponentStatusesFactory extends IModelFactory<ComponentStatusDescriptor, IComponentStatus> {
+public interface IComponentStatusesFactory
+    extends IModelFactory<IStatusWithCommandDescriptor, IStatusWithCommand> {
 }

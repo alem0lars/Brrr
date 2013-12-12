@@ -1,12 +1,13 @@
 package org.nextreamlabs.bradme.factories.models_factories;
 
-import org.nextreamlabs.bradme.dal.descriptors.ComponentStatusDescriptor;
-import org.nextreamlabs.bradme.models.component_status.ComponentStatus;
-import org.nextreamlabs.bradme.models.component_status.IComponentStatus;
+import org.nextreamlabs.bradme.dal.descriptors.IStatusWithCommandDescriptor;
+import org.nextreamlabs.bradme.dal.descriptors.StatusWithCommandDescriptor;
+import org.nextreamlabs.bradme.models.status.IStatusWithCommand;
+import org.nextreamlabs.bradme.models.status.StatusWithCommand;
 import org.nextreamlabs.bradme.support.L10N;
 
 public class ComponentStatusesFactory
-    extends ModelFactory<ComponentStatusDescriptor, IComponentStatus>
+    extends ModelFactory<IStatusWithCommandDescriptor, IStatusWithCommand>
     implements IComponentStatusesFactory {
 
   // { Construction
@@ -24,12 +25,12 @@ public class ComponentStatusesFactory
   // { ModelFactoryWithCache implementation
 
   @Override
-  protected IComponentStatus createElement(ComponentStatusDescriptor componentStatusDescriptor) {
-    return ComponentStatus.create(
-        L10N.t(componentStatusDescriptor.getNameKey()),
-        L10N.t(componentStatusDescriptor.getDescKey()),
-        L10N.t(componentStatusDescriptor.getActionNameKey()),
-        componentStatusDescriptor.commandOnEnter);
+  protected IStatusWithCommand createElement(IStatusWithCommandDescriptor statusWithCommandDescriptor) {
+    return StatusWithCommand.create(
+        L10N.t(statusWithCommandDescriptor.getNameKey()),
+        L10N.t(statusWithCommandDescriptor.getDescKey()),
+        L10N.t(statusWithCommandDescriptor.getActionNameKey()),
+        statusWithCommandDescriptor.getCommandOnEnter());
   }
 
   // }

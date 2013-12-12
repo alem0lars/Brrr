@@ -73,7 +73,7 @@ public class DALLoader implements IDALLoader {
       this.ensureContains(componentInfo, "id");
       String componentId = this.ensureClass(String.class, componentInfo.get("id"), String.format("the component id should be a string"));
 
-      Collection<ComponentStatusDescriptor> selectedStatuses = new LinkedList<>();
+      Collection<IStatusWithCommandDescriptor> selectedStatuses = new LinkedList<>();
       List<Object> loadedStatuses = this.ensureClass(List.class, componentInfo.get("statuses"), String.format("statuses for component %s are invalid", componentId));
 
       for (Object loadedStatus : loadedStatuses) {
@@ -83,7 +83,7 @@ public class DALLoader implements IDALLoader {
         String statusCommandOnStart = this.ensureClass(String.class, statusInfo.get("cmd"), String.format("Invalid component status command (on start)"));
         for (IStatusDescriptor statusDescriptor : availableStatusDescriptors) {
           if (statusDescriptor.getId().equals(statusId)) {
-            selectedStatuses.add(ComponentStatusDescriptor.create(statusId, statusCommandOnStart));
+            selectedStatuses.add(StatusWithCommandDescriptor.create(statusId, statusCommandOnStart));
             found = true;
             break;
           }

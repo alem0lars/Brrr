@@ -12,12 +12,12 @@ public class ComponentDescriptor implements IComponentDescriptor {
   protected String id;
   protected String nameKey;
   protected String descKey;
-  protected Collection<ComponentStatusDescriptor> statuses;
+  protected Collection<IStatusWithCommandDescriptor> statuses;
   protected Map<IComponentDescriptor, IStatusDescriptor> dependencies;
 
   // { Construction
 
-  protected ComponentDescriptor(String id, Collection<ComponentStatusDescriptor> statuses, Map<IComponentDescriptor, IStatusDescriptor> dependencies) {
+  protected ComponentDescriptor(String id, Collection<IStatusWithCommandDescriptor> statuses, Map<IComponentDescriptor, IStatusDescriptor> dependencies) {
     this.id = id;
     this.nameKey = String.format("%s_name", id);
     this.descKey = String.format("%s_desc", id);
@@ -25,7 +25,7 @@ public class ComponentDescriptor implements IComponentDescriptor {
     this.dependencies = new HashMap<>(dependencies);
   }
 
-  public static IComponentDescriptor create(String id, Collection<ComponentStatusDescriptor> statuses, Map<IComponentDescriptor, IStatusDescriptor> dependencies) {
+  public static IComponentDescriptor create(String id, Collection<IStatusWithCommandDescriptor> statuses, Map<IComponentDescriptor, IStatusDescriptor> dependencies) {
     return new ComponentDescriptor(id, statuses, dependencies);
   }
 
@@ -45,7 +45,7 @@ public class ComponentDescriptor implements IComponentDescriptor {
     return this.descKey;
   }
 
-  public Collection<ComponentStatusDescriptor> getStatuses() {
+  public Collection<IStatusWithCommandDescriptor> getStatuses() {
     return this.statuses;
   }
 
