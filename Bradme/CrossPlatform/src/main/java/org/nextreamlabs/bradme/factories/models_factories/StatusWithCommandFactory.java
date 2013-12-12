@@ -5,18 +5,18 @@ import org.nextreamlabs.bradme.models.status.IStatusWithCommand;
 import org.nextreamlabs.bradme.models.status.StatusWithCommand;
 import org.nextreamlabs.bradme.support.L10N;
 
-public class ComponentStatusesFactory
+public class StatusWithCommandFactory
     extends ModelFactory<IStatusWithCommandDescriptor, IStatusWithCommand>
     implements IComponentStatusesFactory {
 
   // { Construction
 
-  protected ComponentStatusesFactory() {
+  protected StatusWithCommandFactory() {
     super();
   }
 
   public static IComponentStatusesFactory create() {
-    return new ComponentStatusesFactory();
+    return new StatusWithCommandFactory();
   }
 
   // }

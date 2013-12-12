@@ -40,13 +40,13 @@ public class ComponentsFactory
 
   @Override
   protected IComponent createElement(IComponentDescriptor componentDescriptor) {
-    ComponentStatusesFactory componentStatusesFactory = new ComponentStatusesFactory();
+    StatusWithCommandFactory statusWithCommandFactory = new StatusWithCommandFactory();
 
     Map<IComponent, IStatus> dependencies = this.createDependencies(componentDescriptor.getDependencies());
     Collection<IStatusWithCommand> statuses = new LinkedList<>();
 
     for (IStatusWithCommandDescriptor statusWithCommandDescriptor : componentDescriptor.getStatuses()) {
-      statuses.add(componentStatusesFactory.createElement(statusWithCommandDescriptor));
+      statuses.add(statusWithCommandFactory.createElement(statusWithCommandDescriptor));
     }
 
     return Component.create(

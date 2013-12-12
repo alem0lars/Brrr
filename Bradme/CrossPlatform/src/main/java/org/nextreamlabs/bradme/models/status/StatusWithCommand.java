@@ -26,15 +26,20 @@ public class StatusWithCommand extends Status implements IStatusWithCommand {
 
   // { IStatusWithCommand implementation
 
-  @Override
   public StringProperty getCommandOnEnter() {
     return this.commandOnEnter;
   }
 
-  @Override
   public StringProperty getWorkDir() {
     return this.workDir;
   }
+
+  @Override
+  public boolean equalsToStatus(IStatus status) {
+    return Status.create(this.name().get(), this.desc().get(), this.actionName().get()).equals(status);
+  }
+
+  // }
 
   @Override
   public boolean equals(Object o) {
@@ -49,10 +54,4 @@ public class StatusWithCommand extends Status implements IStatusWithCommand {
         && this.getWorkDir().equals(otherComponentStatus.getWorkDir());
   }
 
-  @Override
-  public boolean equalsToStatus(IStatus status) {
-    return Status.create(this.name().get(), this.desc().get(), this.actionName().get()).equals(status);
-  }
-
-  // }
 }

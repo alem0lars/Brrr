@@ -1,6 +1,8 @@
 package org.nextreamlabs.bradme.dal.descriptors;
 
-public class StatusWithCommandDescriptor extends StatusDescriptor implements IStatusWithCommandDescriptor {
+public class StatusWithCommandDescriptor
+    extends StatusDescriptor
+    implements IStatusWithCommandDescriptor {
 
   protected String commandOnEnter;
   protected String workDir;
