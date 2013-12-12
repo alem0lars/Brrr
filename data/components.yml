@@ -3,19 +3,24 @@ components:
   - id: brol
     statuses:
       - id: stopped
+        work_dir: /usr/local/archive/projects/Brrr/BroL
         cmd: ""
       - id: starting  # TODO: Remove starting
+        work_dir: /usr/local/archive/projects/Brrr/BroL
         cmd: ""
       - id: started
+        work_dir: /usr/local/archive/projects/Brrr/BroL
         cmd: ""
     dependencies: []
 
   - id: reader
     statuses:
       - id: stopped
-        cmd: "foreman stop reader"
+        work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
+        cmd: foreman stop reader
       - id: started
-        cmd: "foreman start reader"
+        work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
+        cmd: foreman start reader
     dependencies:
       - component: brol
         status: started
@@ -23,9 +28,11 @@ components:
   - id: pusher
     statuses:
       - id: stopped
-        cmd: "foreman stop pusher"
+        work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
+        cmd: foreman stop pusher
       - id: started
-        cmd: "foreman start pusher"
+        work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
+        cmd: foreman start pusher
     dependencies:
       - component: reader
         status: started

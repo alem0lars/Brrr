@@ -6,12 +6,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import org.nextreamlabs.bradme.command.CommandRunner;
+import org.nextreamlabs.bradme.command.ICommandRunner;
 import org.nextreamlabs.bradme.models.status.IStatusWithCommand;
 import org.nextreamlabs.bradme.models.status.IStatus;
 import org.nextreamlabs.bradme.support.Logging;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Component implements IComponent {
@@ -23,6 +26,7 @@ public class Component implements IComponent {
   private ListProperty<ObjectProperty<IStatusWithCommand>> statuses;
   private MapProperty<ObjectProperty<IComponent>, ObjectProperty<IStatus>> dependencies;
   private BooleanProperty areDependenciesSatisfied;
+  private Map<IStatusWithCommand, ICommandRunner> commandRegister;
 
   // { Construction
 
@@ -43,6 +47,18 @@ public class Component implements IComponent {
       tmpStatuses.add(new SimpleObjectProperty<>(status));
     }
     this.statuses = new SimpleListProperty<>(tmpStatuses);
+
+    commandRegister = new HashMap<IStatusWithCommand, ICommandRunner>();
+    for (IStatusWithCommand status : statuses) {
+      // Add a command to the register.
+      String command = status.getCommandOnEnter().getValue();
+      String workDir = status.getWorkDir().getValue();
+      // Skip if command is not given.
+      if ((command != null) && (!command.isEmpty())) {
+        // Use `status` as key for an easy lookup in `changeState()`.
+        commandRegister.put(status, CommandRunner.create(command, workDir));
+      }
+    }
 
     this.currentStatus = new SimpleObjectProperty<>(this.statuses.get(0).getValue());
     this.nextStatus = new SimpleObjectProperty<>(this.findNextStatus(this.currentStatus().getValue()));
@@ -194,22 +210,18 @@ public class Component implements IComponent {
     IStatusWithCommand current = this.currentStatus().getValue();
     Logging.debug(String.format("%s : changing status: '%s' -> '%s'", this, current.getPrettyName(), nextState.getPrettyName()));
 
-    // { Update current status.
+    // Update current status.
     this.currentStatus().setValue(nextState);
 
     // { Execute 'on enter' command.
-    String cmd = nextState.getCommandOnEnter().getValue();
-    Logging.debug(String.format("%s : entered status: '%s'; executing cmd: '%s'", this, nextState.getPrettyName(), cmd));
-    try {
-      Process child = Runtime.getRuntime().exec(cmd); // TODO: capture streams?
-    } catch (IllegalArgumentException e) {
-      Logging.debug(String.format("%s : executing cmd '%s' : caught '%s': ignoring.", this, cmd, e.getMessage()));
-    } catch (NullPointerException e) {
-      Logging.debug(String.format("%s : executing cmd '%s' : caught '%s': ignoring.", this, cmd, e.getMessage()));
-    } catch (IOException e) {
-      Logging.error(String.format("%s : executing cmd '%s': caught '%s'", this, cmd, e.getMessage()));
-    } catch (SecurityException e) {
-      Logging.error(String.format("%s : executing cmd '%s': caught '%s'", this, cmd, e.getMessage()));
+    ICommandRunner runner = commandRegister.get(nextState);
+    // No runner means that we don't have a command registered: in that case simply skip.
+    if (runner != null) {
+      try {
+        runner.runCommand();
+      } catch (IOException e) {
+        Logging.error(String.format("%s : cannot execute 'on enter' command for status '%s' : '%s'.", this, nextState.getPrettyName(), e.getMessage()));
+      }
     }
     // }
 

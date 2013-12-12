@@ -81,9 +81,10 @@ public class DALLoader implements IDALLoader {
         Map<String, Object> statusInfo = this.ensureClass(Map.class, loadedStatus, String.format("the component status informations should be a dictionary"));
         String statusId = this.ensureClass(String.class, statusInfo.get("id"), String.format("Invalid component status identifier"));
         String statusCommandOnStart = this.ensureClass(String.class, statusInfo.get("cmd"), String.format("Invalid component status command (on start)"));
+        String statusWorkDir = this.ensureClass(String.class, statusInfo.get("work_dir"), String.format("Invalid component status command work dir"));
         for (IStatusDescriptor statusDescriptor : availableStatusDescriptors) {
           if (statusDescriptor.getId().equals(statusId)) {
-            selectedStatuses.add(StatusWithCommandDescriptor.create(statusId, statusCommandOnStart));
+            selectedStatuses.add(StatusWithCommandDescriptor.create(statusId, statusCommandOnStart, statusWorkDir));
             found = true;
             break;
           }

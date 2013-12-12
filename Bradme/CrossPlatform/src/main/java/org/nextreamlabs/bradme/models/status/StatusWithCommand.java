@@ -4,17 +4,22 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class StatusWithCommand extends Status implements IStatusWithCommand {
+
   private final StringProperty commandOnEnter;
+  private final StringProperty workDir;
 
   // { Construction
 
-  private StatusWithCommand(StringProperty name, StringProperty desc, StringProperty actionName, StringProperty commandOnEnter) {
+  private StatusWithCommand(StringProperty name, StringProperty desc, StringProperty actionName, StringProperty commandOnEnter, StringProperty workDir) {
     super(name, desc, actionName);
     this.commandOnEnter = commandOnEnter;
+    this.workDir = workDir;
   }
 
-  public static IStatusWithCommand create(String name, String desc, String actionName, String commandOnEnter) {
-    return new StatusWithCommand(new SimpleStringProperty(name), new SimpleStringProperty(desc), new SimpleStringProperty(actionName), new SimpleStringProperty(commandOnEnter));
+  public static IStatusWithCommand create(String name, String desc, String actionName, String commandOnEnter, String workDir) {
+    return new StatusWithCommand(new SimpleStringProperty(name), new SimpleStringProperty(desc),
+        new SimpleStringProperty(actionName), new SimpleStringProperty(commandOnEnter),
+        new SimpleStringProperty(workDir));
   }
 
   // }
@@ -27,6 +32,11 @@ public class StatusWithCommand extends Status implements IStatusWithCommand {
   }
 
   @Override
+  public StringProperty getWorkDir() {
+    return this.workDir;
+  }
+
+  @Override
   public boolean equals(Object o) {
     //noinspection InstanceofInterfaces
     if (!(o instanceof StatusWithCommand)) {
@@ -35,7 +45,8 @@ public class StatusWithCommand extends Status implements IStatusWithCommand {
     IStatusWithCommand otherComponentStatus = (IStatusWithCommand) o;
 
     return super.equals(o)
-        && this.getCommandOnEnter().equals(otherComponentStatus.getCommandOnEnter());
+        && this.getCommandOnEnter().equals(otherComponentStatus.getCommandOnEnter())
+        && this.getWorkDir().equals(otherComponentStatus.getWorkDir());
   }
 
   @Override
