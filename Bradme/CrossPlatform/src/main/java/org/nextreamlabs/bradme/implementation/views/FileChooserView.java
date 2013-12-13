@@ -31,7 +31,7 @@ public class FileChooserView
   protected FileChooserView() {
     super();
     this.setFileChooser(new FileChooser());
-    this.getFileChooser().setTitle("###Open Resource File");
+    this.getFileChooser().setTitle("###Open Resource File###");
     this.setFilePath(null);
   }
 

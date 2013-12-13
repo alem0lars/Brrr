@@ -3,7 +3,7 @@ package org.nextreamlabs.bradme.implementation.commands;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Signal;
-import org.nextreamlabs.bradme.interfaces.models.IRemoteCommand;
+import org.nextreamlabs.bradme.interfaces.models.commands.IRemoteCommand;
 import org.nextreamlabs.bradme.interfaces.commands.IRemoteCommandRunner;
 
 import java.io.IOException;

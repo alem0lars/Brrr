@@ -1,12 +1,14 @@
-package org.nextreamlabs.bradme.implementation.models;
+package org.nextreamlabs.bradme.implementation.models.commands;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.nextreamlabs.bradme.interfaces.models.IRemoteCommand;
+import org.nextreamlabs.bradme.interfaces.models.commands.IRemoteCommand;
 
-public class RemoteCommand extends Command implements IRemoteCommand {
+public class RemoteCommand
+    extends Command
+    implements IRemoteCommand {
 
   private StringProperty hostName;
   private IntegerProperty port;

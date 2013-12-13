@@ -1,7 +1,7 @@
 package org.nextreamlabs.bradme.implementation.commands;
 
 
-import org.nextreamlabs.bradme.interfaces.models.ICommand;
+import org.nextreamlabs.bradme.interfaces.models.commands.ICommand;
 import org.nextreamlabs.bradme.interfaces.commands.ICommandRunner;
 
 import java.io.IOException;

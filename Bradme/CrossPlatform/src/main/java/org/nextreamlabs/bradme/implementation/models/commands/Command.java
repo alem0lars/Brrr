@@ -1,7 +1,7 @@
-package org.nextreamlabs.bradme.implementation.models;
+package org.nextreamlabs.bradme.implementation.models.commands;
 
 import javafx.beans.property.StringProperty;
-import org.nextreamlabs.bradme.interfaces.models.ICommand;
+import org.nextreamlabs.bradme.interfaces.models.commands.ICommand;
 
 public abstract class Command implements ICommand {
 

@@ -4,7 +4,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.nextreamlabs.bradme.interfaces.models.ICommand;
+import org.nextreamlabs.bradme.interfaces.models.commands.ICommand;
 import org.nextreamlabs.bradme.interfaces.models.IStatus;
 import org.nextreamlabs.bradme.interfaces.models.IStatusWithCommand;
 

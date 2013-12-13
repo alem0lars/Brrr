@@ -3,8 +3,10 @@ components:
   - id: brol
     statuses:
       - id: stopped
-        work_dir: /usr/local/archive/projects/Brrr/BroL
-        cmd: ""
+        cmd:
+          type: ILocalCommand
+          work_dir: /usr/local/archive/projects/Brrr/BroL
+          command: foreman stop brol
       - id: starting  # TODO: Remove starting
         work_dir: /usr/local/archive/projects/Brrr/BroL
         cmd: ""

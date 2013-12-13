@@ -1,8 +1,8 @@
-package org.nextreamlabs.bradme.implementation.models;
+package org.nextreamlabs.bradme.implementation.models.commands;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.nextreamlabs.bradme.interfaces.models.ILocalCommand;
+import org.nextreamlabs.bradme.interfaces.models.commands.ILocalCommand;
 
 public class LocalCommand extends Command implements ILocalCommand {
 

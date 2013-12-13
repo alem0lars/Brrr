@@ -1,6 +1,6 @@
 package org.nextreamlabs.bradme.implementation.commands;
 
-import org.nextreamlabs.bradme.interfaces.models.ILocalCommand;
+import org.nextreamlabs.bradme.interfaces.models.commands.ILocalCommand;
 import org.nextreamlabs.bradme.interfaces.commands.ILocalCommandRunner;
 
 import java.io.File;

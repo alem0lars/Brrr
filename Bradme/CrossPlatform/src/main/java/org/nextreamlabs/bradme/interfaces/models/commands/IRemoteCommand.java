@@ -1,4 +1,4 @@
-package org.nextreamlabs.bradme.interfaces.models;
+package org.nextreamlabs.bradme.interfaces.models.commands;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
