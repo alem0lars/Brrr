@@ -6,7 +6,7 @@
 
   <properties>
 
-    <exec.mainClass>org.nextreamlabs.bradme.Main</exec.mainClass>
+    <exec.mainClass>org.nextreamlabs.bradme.implementation.Main</exec.mainClass>
 
     <keystore.username>dummyuser</keystore.username>
     <keystore.password>dummypassword</keystore.password>
@@ -68,6 +68,13 @@
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
       <version>1.14-SNAPSHOT</version>
+    </dependency>
+
+    <!-- SSH -->
+    <dependency>
+      <groupId>net.schmizz</groupId>
+      <artifactId>sshj</artifactId>
+      <version>0.9.0</version>
     </dependency>
 
   </dependencies>
