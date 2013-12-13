@@ -30,11 +30,16 @@ public class FactoryForICommand
 
   @Override
   protected ICommand createElement(ICommandDescriptor commandDescriptor) {
-    throw CannotCreateModelException.create(String.format("Command descriptor not handled: '%s", commandDescriptor));
+    // TODO: a better way to dynamically dispatch?
+    if (commandDescriptor instanceof ILocalCommandDescriptor) {
+      return createElement((ILocalCommandDescriptor) commandDescriptor);
+    } else if (commandDescriptor instanceof IRemoteCommandDescriptor) {
+      return createElement((IRemoteCommandDescriptor) commandDescriptor);
+    } else {
+      throw CannotCreateModelException.create(String.format("Command descriptor not handled: '%s", commandDescriptor));
+    }
   }
 
-  // TODO: why we cannot overload in this way?
-  @Override
   protected ICommand createElement(ILocalCommandDescriptor commandDescriptor) {
     return LocalCommand.create(
         commandDescriptor.getCommand(),
@@ -42,8 +47,6 @@ public class FactoryForICommand
     );
   }
 
-  // TODO: why we cannot overload in this way?
-  @Override
   protected ICommand createElement(IRemoteCommandDescriptor commandDescriptor) {
     return RemoteCommand.create(
         commandDescriptor.getCommand(),
