@@ -43,8 +43,7 @@ public class FactoryForICommand
   protected ICommand createElement(ILocalCommandDescriptor commandDescriptor) {
     return LocalCommand.create(
         commandDescriptor.getCommand(),
-        commandDescriptor.getWorkDir()
-    );
+        commandDescriptor.getWorkDir());
   }
 
   protected ICommand createElement(IRemoteCommandDescriptor commandDescriptor) {
@@ -53,8 +52,7 @@ public class FactoryForICommand
         commandDescriptor.getWorkDir(),
         commandDescriptor.getHost(),
         commandDescriptor.getPort(),
-        commandDescriptor.getUser()
-    );
+        commandDescriptor.getUser());
   }
 
   // }

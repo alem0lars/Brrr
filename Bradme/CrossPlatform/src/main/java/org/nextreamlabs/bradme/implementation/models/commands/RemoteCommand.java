@@ -16,15 +16,34 @@ public class RemoteCommand
 
   // { Construction
 
-  protected RemoteCommand(StringProperty commandString, StringProperty workDir, StringProperty hostName, IntegerProperty port, StringProperty executingUser) {
+  protected RemoteCommand(
+      StringProperty commandString,
+      StringProperty workDir,
+      StringProperty hostName,
+      IntegerProperty port,
+      StringProperty executingUser) {
+
     super(commandString, workDir);
+
     this.hostName = hostName;
     this.port = port;
     this.executingUser = executingUser;
   }
 
-  public static IRemoteCommand create(String commandString, String workDir, String hostName, Integer port, String executingUser) {
-    return new RemoteCommand(new SimpleStringProperty(commandString), new SimpleStringProperty(workDir), new SimpleStringProperty(hostName), new SimpleIntegerProperty(port), new SimpleStringProperty(executingUser));
+  public static IRemoteCommand create(
+      String commandString,
+      String workDir,
+      String hostName,
+      Integer port,
+      String executingUser) {
+
+    return new RemoteCommand(
+        new SimpleStringProperty(commandString),
+        new SimpleStringProperty(workDir),
+        new SimpleStringProperty(hostName),
+        new SimpleIntegerProperty(port),
+        new SimpleStringProperty(executingUser));
+
   }
 
   // }

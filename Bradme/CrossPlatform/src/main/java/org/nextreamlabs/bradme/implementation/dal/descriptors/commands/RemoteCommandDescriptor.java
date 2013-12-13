@@ -6,9 +6,13 @@ public class RemoteCommandDescriptor
     extends CommandDescriptor
     implements IRemoteCommandDescriptor {
 
+  // { Fields
+
   private final Integer port;
   private final String user;
   private final String host;
+
+  // }
 
   // { Construction.
 
