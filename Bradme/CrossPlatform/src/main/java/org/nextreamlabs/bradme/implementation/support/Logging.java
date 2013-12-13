@@ -19,7 +19,7 @@ public class Logging {
    */
   static {
     DEFAULT_LOGGER = LoggerFactory.getLogger("org.nextreamlabs.bradme");
-    DEFAULT_LOGGER_CONFIG_PATH = "/org/nextreamlabs/bradme/config/log4j.xml";
+    DEFAULT_LOGGER_CONFIG_PATH = "/org/nextreamlabs/bradme/implementation/config/log4j.xml";
 
     DOMConfigurator.configure(Logging.class.getResource(DEFAULT_LOGGER_CONFIG_PATH));
   }

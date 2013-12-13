@@ -1,6 +1,8 @@
 package org.nextreamlabs.bradme.implementation.exceptions;
 
-public class CannotCreateViewException extends RuntimeException implements IException {
+public class CannotCreateViewException
+    extends RuntimeException
+    implements IException {
 
   protected final String viewName;
 

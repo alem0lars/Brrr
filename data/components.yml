@@ -8,21 +8,32 @@ components:
           work_dir: /usr/local/archive/projects/Brrr/BroL
           command: foreman stop brol
       - id: starting  # TODO: Remove starting
-        work_dir: /usr/local/archive/projects/Brrr/BroL
-        cmd: ""
+        cmd:
+          type: ILocalCommand
+          work_dir: /usr/local/archive/projects/Brrr/BroL
+          command: ""
       - id: started
-        work_dir: /usr/local/archive/projects/Brrr/BroL
-        cmd: ""
+        cmd:
+          type: IRemoteCommand
+          work_dir: /usr/local/archive/projects/Brrr/BroL
+          user: lmolr
+          host: 127.0.0.1
+          port: 22
+          command: "foreman start brol"
     dependencies: []
 
   - id: reader
     statuses:
       - id: stopped
-        work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
-        cmd: foreman stop reader
+        cmd:
+          type: ILocalCommand
+          work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
+          command: foreman stop reader
       - id: started
-        work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
-        cmd: foreman start reader
+        cmd:
+          type: ILocalCommand
+          work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
+          command: foreman stop reader
     dependencies:
       - component: brol
         status: started
@@ -30,11 +41,15 @@ components:
   - id: pusher
     statuses:
       - id: stopped
-        work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
-        cmd: foreman stop pusher
+        cmd:
+          type: ILocalCommand
+          work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
+          command: foreman stop reader
       - id: started
-        work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
-        cmd: foreman start pusher
+        cmd:
+          type: ILocalCommand
+          work_dir: /usr/local/archive/projects/Brrr/BrrrSRV
+          command: foreman start reader
     dependencies:
       - component: reader
         status: started

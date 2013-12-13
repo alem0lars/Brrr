@@ -1,6 +1,6 @@
 package org.nextreamlabs.bradme.implementation.dal.descriptors;
 
-import org.nextreamlabs.bradme.interfaces.dal.descriptors.ICommandDescriptor;
+import org.nextreamlabs.bradme.interfaces.dal.descriptors.commands.ICommandDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusWithCommandDescriptor;
 
 public class StatusWithCommandDescriptor

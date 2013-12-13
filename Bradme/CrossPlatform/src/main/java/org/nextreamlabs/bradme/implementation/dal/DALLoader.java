@@ -1,18 +1,23 @@
 package org.nextreamlabs.bradme.implementation.dal;
 
 import org.nextreamlabs.bradme.implementation.dal.descriptors.*;
+import org.nextreamlabs.bradme.implementation.dal.descriptors.commands.LocalCommandDescriptor;
+import org.nextreamlabs.bradme.implementation.dal.descriptors.commands.RemoteCommandDescriptor;
 import org.nextreamlabs.bradme.implementation.exceptions.InvalidConfigurationException;
 import org.nextreamlabs.bradme.implementation.support.Logging;
 import org.nextreamlabs.bradme.interfaces.dal.IDALLoader;
-import org.nextreamlabs.bradme.interfaces.dal.descriptors.ICommandDescriptor;
+import org.nextreamlabs.bradme.interfaces.dal.descriptors.commands.ICommandDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IComponentDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusWithCommandDescriptor;
+import org.nextreamlabs.bradme.interfaces.models.commands.ICommand;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.*;
+
+import static java.lang.Boolean.FALSE;
 
 public class DALLoader implements IDALLoader {
 
@@ -85,43 +90,54 @@ public class DALLoader implements IDALLoader {
   public Collection<IComponentDescriptor> queryComponentDescriptors() {
     Collection<IStatusDescriptor> availableStatusDescriptors = queryStatusDescriptors();
     Collection<IComponentDescriptor> componentDescriptors = new LinkedList<>();
-    String componentsKey = "components";
 
-    this.ensureContains(this.getLoadedContent(), componentsKey);
-    List loadedComponents = ensureClass(List.class, this.getLoadedContent().get(componentsKey), String.format("%s doesn't contain a list", componentsKey));
+    // Components.
+    this.ensureContains(this.getLoadedContent(), "components");
+    List loadedComponents = ensureClass(List.class, this.getLoadedContent().get("components"), "'components' should be a list");
 
     for (Object loadedComponent : loadedComponents) {
-      Map<String, Object> componentInfo = this.ensureClass(Map.class, loadedComponent, String.format("Invalid component info"));
-
+      // { Component.
+      Map<String, Object> componentInfo = this.ensureClass(Map.class, loadedComponent, "each 'components' content should be a map");
       this.ensureContains(componentInfo, "id");
       String componentId = this.ensureClass(String.class, componentInfo.get("id"), String.format("the component id should be a string"));
 
+      // { Statuses.
       Collection<IStatusWithCommandDescriptor> selectedStatuses = new LinkedList<>();
       List<Object> loadedStatuses = this.ensureClass(List.class, componentInfo.get("statuses"), String.format("statuses for component %s are invalid", componentId));
 
       for (Object loadedStatus : loadedStatuses) {
-        Boolean found = false;
+        // { Status.
         Map<String, Object> statusInfo = this.ensureClass(Map.class, loadedStatus, String.format("the component status informations should be a dictionary"));
+        this.ensureContains(statusInfo, "id");
         String statusId = this.ensureClass(String.class, statusInfo.get("id"), String.format("Invalid component status identifier"));
-        String statusCommandOnStart = this.ensureClass(String.class, statusInfo.get("cmd"), String.format("Invalid component status command (on start)"));
-        String statusWorkDir = this.ensureClass(String.class, statusInfo.get("work_dir"), String.format("Invalid component status command work dir"));
+
+        IStatusDescriptor matchingStatusDescriptor = null;
         for (IStatusDescriptor statusDescriptor : availableStatusDescriptors) {
           if (statusDescriptor.getId().equals(statusId)) {
-            ICommandDescriptor commandDescriptor = null; // TODO: Implement
-            selectedStatuses.add(StatusWithCommandDescriptor.create(statusId, commandDescriptor));
-            found = true;
+            matchingStatusDescriptor = statusDescriptor;
             break;
           }
         }
-        if (!found) {
+        if (matchingStatusDescriptor == null) {
           throw InvalidConfigurationException.create(String.format("status %s hasn't been declared", statusId));
         }
-      }
 
+        // { Command.
+        this.ensureContains(statusInfo, "cmd");
+        Map<String, Object> commandInfo = this.ensureClass(Map.class, statusInfo.get("cmd"), "'cmd' should be a dictionary");
+        ICommandDescriptor commandDescriptor = parseCommandDescriptor(commandInfo);
+        // } Command.
+        // } Status.
+        selectedStatuses.add(StatusWithCommandDescriptor.create(statusId, commandDescriptor));
+      }
+      // } Statuses.
+
+      // { Dependencies.
       Map<IComponentDescriptor, IStatusDescriptor> dependencies = new HashMap<>();
       List<Object> dependenciesInfo = this.ensureClass(List.class, componentInfo.get("dependencies"), String.format("The dependencies for component %s are invalid", componentId));
 
       for (Object dependencyInfo : dependenciesInfo) {
+        // { Dependency.
         Map<String, String> dependencyMap = this.ensureClass(Map.class, dependencyInfo, "A dependency should be an hash");
 
         IComponentDescriptor dependencyComponent = null;
@@ -149,13 +165,56 @@ public class DALLoader implements IDALLoader {
         }
 
         dependencies.put(dependencyComponent, dependencyStatus);
+        // } Dependency.
       }
 
       IComponentDescriptor componentDescriptor = ComponentDescriptor.create(componentId, selectedStatuses, dependencies);
       componentDescriptors.add(componentDescriptor);
+      // } Component.
     }
 
-    return componentDescriptors;
+  return componentDescriptors;
+  }
+
+  // }
+
+  // { Partial parsing utilities.
+
+  private ICommandDescriptor parseCommandDescriptor(Map<String, Object> cmdInfo) {
+    ICommandDescriptor commandDescriptor = null;
+
+    // Generic.
+    this.ensureContains(cmdInfo, "command");
+    String command = this.ensureClass(String.class, cmdInfo.get("command"), "Command 'command' should be a String.");
+    this.ensureContains(cmdInfo, "work_dir");
+    String workDir = this.ensureClass(String.class, cmdInfo.get("work_dir"), "Command 'work_dir' should be a String.");
+
+    this.ensureContains(cmdInfo, "type");
+    String type = this.ensureClass(String.class, cmdInfo.get("type"), "Command 'type' should be a String.");
+    this.ensureStringToClass(ICommand.class, String.format("org.nextreamlabs.bradme.interfaces.models.commands.%s", type));
+
+    // Specific.
+    if (type.equals("ILocalCommand")) {
+      // ILocalCommand.
+      commandDescriptor = LocalCommandDescriptor.create(command, workDir);
+    } else if (type.equals("IRemoteCommand")) {
+      // IRemoteCommand.
+      this.ensureContains(cmdInfo, "user");
+      String user = this.ensureClass(String.class, cmdInfo.get("user"), "RemoteCommand 'user' should be a String.");
+      this.ensureContains(cmdInfo, "host");
+      String host = this.ensureClass(String.class, cmdInfo.get("host"), "RemoteCommand 'host' should be a String.");
+      this.ensureContains(cmdInfo, "port");
+      Integer port = this.ensureClass(Integer.class, cmdInfo.get("port"), "RemoteCommand 'port' should be an Integer.");
+      commandDescriptor = RemoteCommandDescriptor.create(command, workDir, user, host, port);
+    } else {
+      // Not supported.
+      throw InvalidConfigurationException.create(String.format("Command '%s' is not currently supported.", type));
+    }
+
+    if (commandDescriptor == null) {
+      throw InvalidConfigurationException.create("An error occurred while creating a CommandDescriptor: commandDescriptor is null.");
+    }
+    return commandDescriptor;
   }
 
   // }
@@ -176,6 +235,19 @@ public class DALLoader implements IDALLoader {
   protected void ensureContains(Map map, String key) {
     if (!map.containsKey(key)) {
       throw InvalidConfigurationException.create(String.format("The key %s is missing", key));
+    }
+  }
+
+  protected void ensureStringToClass(Class klass, String string) {
+    Boolean ok = FALSE;
+    try {
+      // TODO: is `isAssignableFrom()` correct for the needed behaviour?
+      ok = klass.isAssignableFrom(Class.forName(string));
+    } catch (ClassNotFoundException e) {
+      throw InvalidConfigurationException.create(String.format("String '%s' does not represent a class.", string));
+    }
+    if (!ok) {
+      throw InvalidConfigurationException.create(String.format("Class '%s' is incompatible with '%s'.", string, klass));
     }
   }
 

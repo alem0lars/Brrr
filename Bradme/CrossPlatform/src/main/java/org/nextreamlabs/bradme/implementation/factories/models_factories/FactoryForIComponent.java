@@ -1,5 +1,6 @@
 package org.nextreamlabs.bradme.implementation.factories.models_factories;
 
+import org.nextreamlabs.bradme.implementation.factories.models_factories.commands.FactoryForICommand;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IComponentDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusWithCommandDescriptor;
