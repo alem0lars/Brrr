@@ -10,6 +10,8 @@ import org.nextreamlabs.bradme.interfaces.dal.descriptors.commands.IRemoteComman
 import org.nextreamlabs.bradme.interfaces.factories.models_factories.commands.IFactoryForICommand;
 import org.nextreamlabs.bradme.interfaces.models.commands.ICommand;
 
+import java.io.IOException;
+
 public class FactoryForICommand
   extends FactoryForIModel<ICommandDescriptor, ICommand>
   implements IFactoryForICommand {
@@ -43,18 +45,22 @@ public class FactoryForICommand
   protected ICommand createElement(ILocalCommandDescriptor commandDescriptor) {
     return LocalCommand.create(
         commandDescriptor.getCommand(),
-        commandDescriptor.getWorkDir()
-    );
+        commandDescriptor.getWorkDir());
   }
 
   protected ICommand createElement(IRemoteCommandDescriptor commandDescriptor) {
-    return RemoteCommand.create(
-        commandDescriptor.getCommand(),
-        commandDescriptor.getWorkDir(),
-        commandDescriptor.getHost(),
-        commandDescriptor.getPort(),
-        commandDescriptor.getUser()
-    );
+    ICommand cmd = null;
+    try {
+      cmd = RemoteCommand.create(
+          commandDescriptor.getCommand(),
+          commandDescriptor.getWorkDir(),
+          commandDescriptor.getHost(),
+          commandDescriptor.getPort(),
+          commandDescriptor.getUser());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return cmd;
   }
 
   // }

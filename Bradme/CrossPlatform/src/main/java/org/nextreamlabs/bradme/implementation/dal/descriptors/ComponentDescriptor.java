@@ -21,7 +21,10 @@ public class ComponentDescriptor
 
   // { Construction
 
-  protected ComponentDescriptor(String id, Collection<IStatusWithCommandDescriptor> statuses, Map<IComponentDescriptor, IStatusDescriptor> dependencies) {
+  protected ComponentDescriptor(
+      String id,
+      Collection<IStatusWithCommandDescriptor> statuses,
+      Map<IComponentDescriptor, IStatusDescriptor> dependencies) {
     this.id = id;
     this.nameKey = String.format("%s_name", id);
     this.descKey = String.format("%s_desc", id);
@@ -29,7 +32,10 @@ public class ComponentDescriptor
     this.dependencies = new HashMap<>(dependencies);
   }
 
-  public static IComponentDescriptor create(String id, Collection<IStatusWithCommandDescriptor> statuses, Map<IComponentDescriptor, IStatusDescriptor> dependencies) {
+  public static IComponentDescriptor create(
+      String id,
+      Collection<IStatusWithCommandDescriptor> statuses,
+      Map<IComponentDescriptor, IStatusDescriptor> dependencies) {
     return new ComponentDescriptor(id, statuses, dependencies);
   }
 

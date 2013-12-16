@@ -22,22 +22,40 @@ public class RemoteCommand
 
   // { Construction
 
-  protected RemoteCommand(ListProperty<StringProperty> commandArgs, StringProperty workDir, StringProperty hostName, IntegerProperty port, StringProperty executingUser)  throws IOException {
+  protected RemoteCommand(
+      ListProperty<StringProperty>commandArgs,
+      StringProperty workDir,
+      StringProperty hostName,
+      IntegerProperty port,
+      StringProperty executingUser) throws IOException {
+
     super(commandArgs, workDir);
+
     this.hostName = hostName;
     this.port = port;
     this.executingUser = executingUser;
     this.runner = RemoteCommandRunner.create(this);
   }
 
-  public static IRemoteCommand create(List<String> commandArgs, String workDir, String hostName, Integer port, String executingUser) throws IOException {
-    // TODO: factor the following transform (into `Command`?).
+  public static IRemoteCommand create(
+      List<String> commandArgs,
+      String workDir,
+      String hostName,
+      Integer port,
+      String executingUser) throws IOException {
+
     // Transform `commandArgs` into an `ObservableList`.
     ObservableList<StringProperty> obsCommandArgs = FXCollections.observableArrayList();
     for (String arg : commandArgs) {
       obsCommandArgs.add(new SimpleStringProperty(arg));
     }
-    return new RemoteCommand(new SimpleListProperty<>(obsCommandArgs), new SimpleStringProperty(workDir), new SimpleStringProperty(hostName), new SimpleIntegerProperty(port), new SimpleStringProperty(executingUser));
+
+    return new RemoteCommand(
+        new SimpleListProperty<>(obsCommandArgs),
+        new SimpleStringProperty(workDir),
+        new SimpleStringProperty(hostName),
+        new SimpleIntegerProperty(port),
+        new SimpleStringProperty(executingUser));
   }
 
   // }
