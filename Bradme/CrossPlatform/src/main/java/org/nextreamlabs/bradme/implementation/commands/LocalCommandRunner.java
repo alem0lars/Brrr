@@ -1,10 +1,15 @@
 package org.nextreamlabs.bradme.implementation.commands;
 
-import org.nextreamlabs.bradme.interfaces.models.commands.ILocalCommand;
+import javafx.beans.property.StringProperty;
+import org.nextreamlabs.bradme.implementation.support.Logging;
 import org.nextreamlabs.bradme.interfaces.commands.ILocalCommandRunner;
+import org.nextreamlabs.bradme.interfaces.models.commands.ILocalCommand;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class LocalCommandRunner
     extends CommandRunner<ILocalCommand>
@@ -31,7 +36,20 @@ public class LocalCommandRunner
 
   protected LocalCommandRunner(ILocalCommand command) {
     super(command);
-    this.processBuilder = new ProcessBuilder(this.getCommand().commandString().getValue());
+    List<StringProperty> commandArgs = this.getCommand().commandArgs().getValue();
+    List<String> plainArgs = new ArrayList<String>(commandArgs.size());
+    for (StringProperty argProperty : commandArgs) {
+      plainArgs.add(argProperty.getValue());
+    }
+    this.processBuilder = new ProcessBuilder(plainArgs);
+
+    // { TODO: TMP: stream redirections are for debug.
+    File f = new File("/tmp/LocalCommandRunner_" + command.hashCode());
+    f.deleteOnExit();
+    this.processBuilder.redirectError(f);
+    this.processBuilder.redirectOutput(f);
+    // }
+
     this.getProcessBuilder().directory(new File(this.getCommand().workDir().getValue()));
     this.setProcess(null);
   }
@@ -46,7 +64,9 @@ public class LocalCommandRunner
 
   @Override
   public void start() throws IOException {
-    this.setProcess(this.getProcessBuilder().start());
+    if (!this.getCommand().commandArgs().getValue().isEmpty()) {
+      this.setProcess(this.getProcessBuilder().start());
+    }
   }
 
   @Override

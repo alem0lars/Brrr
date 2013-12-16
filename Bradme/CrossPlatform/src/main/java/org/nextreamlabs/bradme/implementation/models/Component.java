@@ -6,18 +6,18 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import org.nextreamlabs.bradme.interfaces.commands.ILocalCommandRunner;
-import org.nextreamlabs.bradme.interfaces.commands.IRemoteCommandRunner;
 import org.nextreamlabs.bradme.implementation.commands.LocalCommandRunner;
 import org.nextreamlabs.bradme.implementation.commands.RemoteCommandRunner;
 import org.nextreamlabs.bradme.implementation.exceptions.CannotChangeComponentStatusException;
-import org.nextreamlabs.bradme.interfaces.models.commands.ICommand;
-import org.nextreamlabs.bradme.interfaces.models.commands.ILocalCommand;
-import org.nextreamlabs.bradme.interfaces.models.commands.IRemoteCommand;
+import org.nextreamlabs.bradme.implementation.support.Logging;
+import org.nextreamlabs.bradme.interfaces.commands.ILocalCommandRunner;
+import org.nextreamlabs.bradme.interfaces.commands.IRemoteCommandRunner;
 import org.nextreamlabs.bradme.interfaces.models.IComponent;
 import org.nextreamlabs.bradme.interfaces.models.IStatus;
 import org.nextreamlabs.bradme.interfaces.models.IStatusWithCommand;
-import org.nextreamlabs.bradme.implementation.support.Logging;
+import org.nextreamlabs.bradme.interfaces.models.commands.ICommand;
+import org.nextreamlabs.bradme.interfaces.models.commands.ILocalCommand;
+import org.nextreamlabs.bradme.interfaces.models.commands.IRemoteCommand;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -203,30 +203,23 @@ public class Component implements IComponent {
     IStatusWithCommand current = this.currentStatus().getValue();
     Logging.debug(String.format("%s : changing status: '%s' -> '%s'", this, current.getPrettyName(), nextStatus.getPrettyName()));
 
-    // Execute the command
-      ICommand currentStatusEnteringCommand = nextStatus.command().getValue();
-      if (currentStatusEnteringCommand instanceof ILocalCommand) {
-        try {
-          ILocalCommandRunner commandRunner = LocalCommandRunner.create((ILocalCommand) currentStatusEnteringCommand);
-          commandRunner.start();
-        } catch (IOException exc) {
-          throw CannotChangeComponentStatusException.create(this.currentStatus().getValue(), nextStatus, exc.getMessage());
-        }
-      } else if (currentStatusEnteringCommand instanceof IRemoteCommand) {
-        try {
-          IRemoteCommandRunner commandRunner = RemoteCommandRunner.create((IRemoteCommand) currentStatusEnteringCommand);
-          commandRunner.start();
-        } catch (IOException exc) {
-          throw CannotChangeComponentStatusException.create(this.currentStatus().getValue(), nextStatus, exc.getMessage());
-        }
-      } else {
-        throw CannotChangeComponentStatusException.create(this.currentStatus().getValue(), nextStatus, "Invalid command for next status");
-      }
 
-    // Update current status.
+    ICommand prevStatusEnteringCommand = current.command().getValue();
+    ICommand currentStatusEnteringCommand = nextStatus.command().getValue();
+
+    try {
+      // Stop the previous command.
+      prevStatusEnteringCommand.runner().stop();
+      // Start the new command.
+      currentStatusEnteringCommand.runner().start();
+    } catch (IOException exc) {
+      throw CannotChangeComponentStatusException.create(this.currentStatus().getValue(), nextStatus, exc.getMessage());
+    }
+
+    // Update the current status.
     this.currentStatus().setValue(nextStatus);
 
-    // Update next status.
+    // Update the next status.
     this.nextStatus().setValue(this.findNextStatus(this.currentStatus().getValue()));
   }
 

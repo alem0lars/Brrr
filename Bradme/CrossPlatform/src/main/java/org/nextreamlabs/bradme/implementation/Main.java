@@ -9,9 +9,9 @@ import org.nextreamlabs.bradme.implementation.controllers.AppController;
 import org.nextreamlabs.bradme.implementation.support.L10N;
 import org.nextreamlabs.bradme.implementation.support.Logging;
 import org.nextreamlabs.bradme.implementation.views.AppView;
-import org.nextreamlabs.bradme.interfaces.views.IAppView;
 import org.nextreamlabs.bradme.interfaces.config.IConfiguration;
 import org.nextreamlabs.bradme.interfaces.controllers.IAppController;
+import org.nextreamlabs.bradme.interfaces.views.IAppView;
 
 /**
  * The application entry point.

@@ -8,10 +8,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import org.nextreamlabs.bradme.interfaces.models.IComponent;
-import org.nextreamlabs.bradme.interfaces.models.IStatus;
 import org.nextreamlabs.bradme.implementation.support.Logging;
 import org.nextreamlabs.bradme.interfaces.controllers.IComponentController;
+import org.nextreamlabs.bradme.interfaces.models.IComponent;
+import org.nextreamlabs.bradme.interfaces.models.IStatus;
 
 public class ComponentController
     extends Controller

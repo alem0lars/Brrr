@@ -1,15 +1,17 @@
 package org.nextreamlabs.bradme.implementation.dal;
 
-import org.nextreamlabs.bradme.implementation.dal.descriptors.*;
+import org.nextreamlabs.bradme.implementation.dal.descriptors.ComponentDescriptor;
+import org.nextreamlabs.bradme.implementation.dal.descriptors.StatusDescriptor;
+import org.nextreamlabs.bradme.implementation.dal.descriptors.StatusWithCommandDescriptor;
 import org.nextreamlabs.bradme.implementation.dal.descriptors.commands.LocalCommandDescriptor;
 import org.nextreamlabs.bradme.implementation.dal.descriptors.commands.RemoteCommandDescriptor;
 import org.nextreamlabs.bradme.implementation.exceptions.InvalidConfigurationException;
 import org.nextreamlabs.bradme.implementation.support.Logging;
 import org.nextreamlabs.bradme.interfaces.dal.IDALLoader;
-import org.nextreamlabs.bradme.interfaces.dal.descriptors.commands.ICommandDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IComponentDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusWithCommandDescriptor;
+import org.nextreamlabs.bradme.interfaces.dal.descriptors.commands.ICommandDescriptor;
 import org.nextreamlabs.bradme.interfaces.models.commands.ICommand;
 import org.yaml.snakeyaml.Yaml;
 
@@ -185,7 +187,13 @@ public class DALLoader implements IDALLoader {
 
     // Generic.
     this.ensureContains(cmdInfo, "command");
-    String command = this.ensureClass(String.class, cmdInfo.get("command"), "Command 'command' should be a String.");
+    List<Object> commandList = this.ensureClass(List.class, cmdInfo.get("command"), "Command 'command' should be a List.");
+    List<String> command = new ArrayList<String>(commandList.size());
+    for (Object argObj : commandList) {
+      String argStr = this.ensureClass(String.class, argObj, "Command argument should be a String.");
+      command.add(argStr);
+    }
+
     this.ensureContains(cmdInfo, "work_dir");
     String workDir = this.ensureClass(String.class, cmdInfo.get("work_dir"), "Command 'work_dir' should be a String.");
 

@@ -1,11 +1,11 @@
 package org.nextreamlabs.bradme.implementation.factories.models_factories;
 
-import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusWithCommandDescriptor;
-import org.nextreamlabs.bradme.interfaces.factories.models_factories.commands.IFactoryForICommand;
-import org.nextreamlabs.bradme.interfaces.factories.models_factories.IFactoryForIStatusWithCommand;
-import org.nextreamlabs.bradme.interfaces.models.IStatusWithCommand;
 import org.nextreamlabs.bradme.implementation.models.StatusWithCommand;
 import org.nextreamlabs.bradme.implementation.support.L10N;
+import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusWithCommandDescriptor;
+import org.nextreamlabs.bradme.interfaces.factories.models_factories.IFactoryForIStatusWithCommand;
+import org.nextreamlabs.bradme.interfaces.factories.models_factories.commands.IFactoryForICommand;
+import org.nextreamlabs.bradme.interfaces.models.IStatusWithCommand;
 
 public class FactoryForIStatusWithCommand
     extends FactoryForIModel<IStatusWithCommandDescriptor, IStatusWithCommand>

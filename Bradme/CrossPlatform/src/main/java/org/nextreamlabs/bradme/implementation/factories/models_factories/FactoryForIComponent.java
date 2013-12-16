@@ -1,19 +1,19 @@
 package org.nextreamlabs.bradme.implementation.factories.models_factories;
 
+import org.nextreamlabs.bradme.implementation.dal.repositories.AvailableComponentsRepository;
 import org.nextreamlabs.bradme.implementation.factories.models_factories.commands.FactoryForICommand;
+import org.nextreamlabs.bradme.implementation.models.Component;
+import org.nextreamlabs.bradme.implementation.support.L10N;
+import org.nextreamlabs.bradme.implementation.support.Logging;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IComponentDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusDescriptor;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusWithCommandDescriptor;
-import org.nextreamlabs.bradme.implementation.dal.repositories.AvailableComponentsRepository;
-import org.nextreamlabs.bradme.implementation.models.Component;
 import org.nextreamlabs.bradme.interfaces.factories.models_factories.IFactoryForIComponent;
 import org.nextreamlabs.bradme.interfaces.factories.models_factories.IFactoryForIStatus;
 import org.nextreamlabs.bradme.interfaces.factories.models_factories.IFactoryForIStatusWithCommand;
 import org.nextreamlabs.bradme.interfaces.models.IComponent;
 import org.nextreamlabs.bradme.interfaces.models.IStatus;
 import org.nextreamlabs.bradme.interfaces.models.IStatusWithCommand;
-import org.nextreamlabs.bradme.implementation.support.L10N;
-import org.nextreamlabs.bradme.implementation.support.Logging;
 
 import java.util.Collection;
 import java.util.HashMap;

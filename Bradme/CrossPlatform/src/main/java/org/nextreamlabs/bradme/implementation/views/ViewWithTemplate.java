@@ -2,10 +2,10 @@ package org.nextreamlabs.bradme.implementation.views;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import org.nextreamlabs.bradme.interfaces.controllers.IController;
 import org.nextreamlabs.bradme.implementation.exceptions.CannotCreateViewException;
 import org.nextreamlabs.bradme.implementation.exceptions.TemplateNotFoundException;
 import org.nextreamlabs.bradme.implementation.support.Logging;
+import org.nextreamlabs.bradme.interfaces.controllers.IController;
 import org.nextreamlabs.bradme.interfaces.views.IViewWithTemplate;
 
 import java.io.IOException;

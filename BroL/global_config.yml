@@ -8,4 +8,4 @@
 #ignore_checksums: true
 
 # [REQ] Specify the network interface.
-interface: en0
+interface: enp6s0

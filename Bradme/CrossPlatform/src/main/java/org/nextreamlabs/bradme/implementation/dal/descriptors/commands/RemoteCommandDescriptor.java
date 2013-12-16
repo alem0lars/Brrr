@@ -2,6 +2,8 @@ package org.nextreamlabs.bradme.implementation.dal.descriptors.commands;
 
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.commands.IRemoteCommandDescriptor;
 
+import java.util.List;
+
 public class RemoteCommandDescriptor
     extends CommandDescriptor
     implements IRemoteCommandDescriptor {
@@ -12,14 +14,14 @@ public class RemoteCommandDescriptor
 
   // { Construction.
 
-  protected RemoteCommandDescriptor(String command, String workDir, String user, String host, Integer port) {
+  protected RemoteCommandDescriptor(List<String> command, String workDir, String user, String host, Integer port) {
     super(command, workDir);
     this.port = port;
     this.user = user;
     this.host = host;
   }
 
-  public static IRemoteCommandDescriptor create(String command, String workDir, String user, String host, Integer port) {
+  public static IRemoteCommandDescriptor create(List<String> command, String workDir, String user, String host, Integer port) {
     return new RemoteCommandDescriptor(command, workDir, user, host, port);
   }
 

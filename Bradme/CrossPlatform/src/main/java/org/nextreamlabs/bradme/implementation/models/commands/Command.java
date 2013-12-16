@@ -1,17 +1,19 @@
 package org.nextreamlabs.bradme.implementation.models.commands;
 
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.nextreamlabs.bradme.interfaces.models.commands.ICommand;
 
 public abstract class Command implements ICommand {
 
-  private StringProperty commandString;
+  private ListProperty<StringProperty> commandArgs;
   private StringProperty workDir;
 
   // { Construction
 
-  protected Command(StringProperty commandString, StringProperty workDir) {
-    this.commandString = commandString;
+  protected Command(ListProperty<StringProperty> commandArgs, StringProperty workDir) {
+    this.commandArgs = commandArgs;
     this.workDir = workDir;
   }
 
@@ -19,8 +21,16 @@ public abstract class Command implements ICommand {
 
   // { ICommand implementation
 
-  public StringProperty commandString() {
-    return this.commandString;
+  public ListProperty<StringProperty> commandArgs() {
+    return this.commandArgs;
+  }
+
+  public String commandString() {
+    StringBuilder sb = new StringBuilder();
+    for (StringProperty argProperty : this.commandArgs().getValue()) {
+      sb.append(argProperty.getValue()).append(" ");
+    }
+    return sb.toString();
   }
 
   public StringProperty workDir() {
@@ -31,7 +41,7 @@ public abstract class Command implements ICommand {
 
   /**
    * Two commands are equals if they have:
-   * - The same commandString
+   * - The same commandArgs
    * - The same workDir
    *
    * @param o The other object to be compared to.
@@ -45,7 +55,7 @@ public abstract class Command implements ICommand {
     }
     ICommand otherCommand = (ICommand) o;
 
-    return otherCommand.commandString().getValue().equals(this.commandString().getValue())
+    return otherCommand.commandArgs().getValue().equals(this.commandArgs().getValue())
         && otherCommand.workDir().getValue().equals(this.workDir().getValue());
   }
 

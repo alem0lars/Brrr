@@ -1,11 +1,11 @@
 package org.nextreamlabs.bradme.implementation.factories.models_factories;
 
-import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusDescriptor;
 import org.nextreamlabs.bradme.implementation.dal.repositories.AvailableStatusesRepository;
-import org.nextreamlabs.bradme.interfaces.factories.models_factories.IFactoryForIStatus;
-import org.nextreamlabs.bradme.interfaces.models.IStatus;
 import org.nextreamlabs.bradme.implementation.models.Status;
 import org.nextreamlabs.bradme.implementation.support.L10N;
+import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusDescriptor;
+import org.nextreamlabs.bradme.interfaces.factories.models_factories.IFactoryForIStatus;
+import org.nextreamlabs.bradme.interfaces.models.IStatus;
 
 public class FactoryForIStatus
     extends FactoryForIModelWithCache<IStatusDescriptor, IStatus>

@@ -1,8 +1,8 @@
 package org.nextreamlabs.bradme.implementation.dal.repositories;
 
+import org.nextreamlabs.bradme.implementation.exceptions.InvalidConfigurationException;
 import org.nextreamlabs.bradme.interfaces.dal.IDALLoader;
 import org.nextreamlabs.bradme.interfaces.dal.descriptors.IStatusDescriptor;
-import org.nextreamlabs.bradme.implementation.exceptions.InvalidConfigurationException;
 import org.nextreamlabs.bradme.interfaces.dal.repositories.IAvailableStatusesRepository;
 
 import java.util.Collection;

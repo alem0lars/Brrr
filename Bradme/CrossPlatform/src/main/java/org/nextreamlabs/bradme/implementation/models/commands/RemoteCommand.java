@@ -1,10 +1,15 @@
 package org.nextreamlabs.bradme.implementation.models.commands;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.nextreamlabs.bradme.implementation.commands.RemoteCommandRunner;
+import org.nextreamlabs.bradme.interfaces.commands.ICommandRunner;
+import org.nextreamlabs.bradme.interfaces.commands.IRemoteCommandRunner;
 import org.nextreamlabs.bradme.interfaces.models.commands.IRemoteCommand;
+
+import java.io.IOException;
+import java.util.List;
 
 public class RemoteCommand
     extends Command
@@ -13,18 +18,26 @@ public class RemoteCommand
   private StringProperty hostName;
   private IntegerProperty port;
   private StringProperty executingUser;
+  private final IRemoteCommandRunner runner;
 
   // { Construction
 
-  protected RemoteCommand(StringProperty commandString, StringProperty workDir, StringProperty hostName, IntegerProperty port, StringProperty executingUser) {
-    super(commandString, workDir);
+  protected RemoteCommand(ListProperty<StringProperty> commandArgs, StringProperty workDir, StringProperty hostName, IntegerProperty port, StringProperty executingUser)  throws IOException {
+    super(commandArgs, workDir);
     this.hostName = hostName;
     this.port = port;
     this.executingUser = executingUser;
+    this.runner = RemoteCommandRunner.create(this);
   }
 
-  public static IRemoteCommand create(String commandString, String workDir, String hostName, Integer port, String executingUser) {
-    return new RemoteCommand(new SimpleStringProperty(commandString), new SimpleStringProperty(workDir), new SimpleStringProperty(hostName), new SimpleIntegerProperty(port), new SimpleStringProperty(executingUser));
+  public static IRemoteCommand create(List<String> commandArgs, String workDir, String hostName, Integer port, String executingUser) throws IOException {
+    // TODO: factor the following transform (into `Command`?).
+    // Transform `commandArgs` into an `ObservableList`.
+    ObservableList<StringProperty> obsCommandArgs = FXCollections.observableArrayList();
+    for (String arg : commandArgs) {
+      obsCommandArgs.add(new SimpleStringProperty(arg));
+    }
+    return new RemoteCommand(new SimpleListProperty<>(obsCommandArgs), new SimpleStringProperty(workDir), new SimpleStringProperty(hostName), new SimpleIntegerProperty(port), new SimpleStringProperty(executingUser));
   }
 
   // }
@@ -66,5 +79,14 @@ public class RemoteCommand
         && this.port().getValue().equals(otherCommand.port().getValue())
         && this.executingUser().getValue().equals(otherCommand.executingUser().getValue());
   }
+
+  // { ICommand implementation.
+
+  @Override
+  public ICommandRunner runner() {
+    return this.runner;
+  }
+
+  // }
 
 }
