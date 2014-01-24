@@ -1,5 +1,11 @@
+# Ignore generated files
 *.o
 *.so
 
+# Ignore Editors/IDEs stuff
 *.sublime-project
 *.sublime-workspace
+
+# Ignore OS-specific stuff
+**/.DS_Store
+
